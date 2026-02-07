@@ -1,0 +1,25 @@
+{
+  "name": "velocity",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Velocity - React TypeScript Web and Mobile Project",
+  "workspaces": [
+    "web",
+    "mobile"
+  ],
+  "scripts": {
+    "web": "npm run dev --workspace=web",
+    "mobile": "npm start --workspace=mobile",
+    "web:build": "npm run build --workspace=web",
+    "mobile:android": "npm run android --workspace=mobile",
+    "mobile:ios": "npm run ios --workspace=mobile"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "vite",
+    "react-native"
+  ],
+  "author": "",
+  "license": "MIT"
+}
