@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.email in [
+               'admin@velocity.com'
+               // Add more admin emails here
+             ];
+    }
+    
+    // Vehicle images - only admins can upload, everyone can read
+    match /vehicles/{imageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // User profile images (for future use)
+    match /users/{userId}/{imageId} {
+      allow read: if true;
+      allow write: if isAuthenticated() && 
+                     (request.auth.uid == userId || isAdmin());
+    }
+    
+    // Deny all other access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,528 @@
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 140px 2rem 4rem;
+  background: var(--bw-bg);
+}
+
+.hero-container {
+  max-width: 1400px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.hero-content {
+  text-align: left;
+}
+
+.hero-badges {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.hero-badge-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--bw-gradient-accent);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.hero-badge-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.hero-badge-text {
+  color: var(--bw-text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.hero-badge-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+.hero-badge-arrow svg {
+  width: 14px;
+  height: 14px;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--bw-text);
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.hero-title .highlight {
+  background: var(--bw-gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: block;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--bw-text-muted);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.btn {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon svg {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.btn-primary {
+  background: var(--bw-gradient-accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--bw-accent-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--bw-text);
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:hover {
+  background: var(--bw-accent-strong);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: left;
+}
+
+.stat h3 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--bw-accent-strong);
+  margin-bottom: 0.5rem;
+}
+
+.stat p {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Phone Mockup */
+.hero-phone {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.hero-image {
+  width: min(520px, 100%);
+  height: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 0;
+  display: block;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 22px 55px rgba(0, 0, 0, 0.14));
+}
+
+.floating-element {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.95rem 1.15rem;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  color: var(--bw-text);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+.floating-icon {
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--bw-accent-strong);
+  flex-shrink: 0;
+}
+
+.floating-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.floating-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  line-height: 1.1;
+}
+
+.floating-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  color: #000;
+}
+
+.floating-subtitle {
+  font-weight: 400;
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.62);
+}
+
+.floating-1 {
+  top: 10%;
+  left: -12%;
+}
+
+.floating-2 {
+  bottom: 10%;
+  right: -12%;
+}
+
+@keyframes float1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-10px, -20px) rotate(5deg);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(10px, 20px) rotate(-5deg);
+  }
+}
+
+.phone-mockup {
+  width: 320px;
+  height: 650px;
+  background: #f0f0f0;
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  border: 3px solid #e0e0e0;
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.phone-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 25px;
+  background: #ffffff;
+  border-radius: 0 0 20px 20px;
+  z-index: 1;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: #f8f8f8;
+  border-radius: 32px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.phone-header {
+  padding: 2rem 1.5rem 1rem;
+  background: linear-gradient(135deg, #f0f0f0 0%, #f8f8f8 100%);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.phone-logo {
+  height: 35px;
+  object-fit: contain;
+}
+
+.phone-content {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.phone-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+}
+
+.rental-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.rental-card {
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s;
+}
+
+.rental-card:hover {
+  border-color: rgba(0, 0, 0, 0.22);
+  transform: translateX(5px);
+}
+
+.card-icon {
+  width: 50px;
+  height: 50px;
+  background: var(--bw-gradient-accent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.card-info h3 {
+  font-size: 1rem;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.card-info p {
+  font-size: 0.9rem;
+  color: rgba(26, 26, 26, 0.75);
+  font-weight: 600;
+  margin: 0;
+}
+
+.phone-cta {
+  width: 100%;
+  background: var(--bw-gradient-accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.phone-cta:hover {
+  background: var(--bw-accent-strong);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 968px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .hero-content {
+    text-align: center;
+  }
+
+  .hero-badges {
+    justify-content: center;
+  }
+
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .hero-stats {
+    justify-content: center;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .phone-mockup {
+    width: 280px;
+    height: 570px;
+  }
+
+  .floating-element {
+    padding: 0.8rem 1rem;
+  }
+
+  .floating-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .floating-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .floating-1 {
+    left: 5%;
+  }
+
+  .floating-2 {
+    right: 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 100px 1.5rem 3rem;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .hero-stats {
+    gap: 2rem;
+  }
+
+  .stat h3 {
+    font-size: 2rem;
+  }
+
+  .phone-mockup {
+    width: 260px;
+    height: 530px;
+  }
+
+  .floating-element {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .phone-title {
+    font-size: 1.25rem;
+  }
+
+  .rental-card {
+    padding: 1rem;
+  }
+
+  .card-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+  }
+}
+
+
+
+
+
+
+

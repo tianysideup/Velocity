@@ -1,24 +1,52 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app {
+  width: 100%;
+  overflow-x: hidden;
 }
 
-@keyframes logo-spin {
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Floating Chatbot */
+.chatbot-float {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 999;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.chatbot-float:hover {
+  transform: scale(1.05);
+}
+
+.chatbot-icon {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  animation: spin 3s linear infinite;
+}
+
+.chatbot-float:hover .chatbot-icon {
+  animation-play-state: paused;
+}
+
+@keyframes spin {
   from {
     transform: rotate(0deg);
   }
@@ -27,16 +55,21 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@media (max-width: 768px) {
+  .chatbot-float {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .chatbot-icon {
+    width: 70px;
+    height: 70px;
   }
 }
 
-.card {
-  padding: 2em;
-}
 
-.read-the-docs {
-  color: #888;
-}
+
+
+
+
+

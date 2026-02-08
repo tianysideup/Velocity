@@ -1,0 +1,134 @@
+.rentals {
+  padding: 6rem 2rem;
+  background: var(--bw-bg);
+}
+
+.rentals-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--bw-text-muted);
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+  line-height: 1.6;
+}
+
+.rentals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.rental-category {
+  background: var(--bw-surface);
+  padding: 2.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--bw-border);
+  transition: all 0.3s ease;
+}
+
+.rental-category:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+  border-color: rgba(0, 0, 0, 0.22);
+}
+
+.rental-category h3 {
+  font-size: 1.5rem;
+  color: var(--bw-text);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.category-description {
+  color: var(--bw-text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.rental-items {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.rental-items li {
+  padding: 0.75rem 0;
+  color: var(--bw-text);
+  border-bottom: 1px solid var(--bw-border);
+  display: flex;
+  align-items: center;
+}
+
+.rental-items li:last-child {
+  border-bottom: none;
+}
+
+.rental-items li::before {
+  content: '→';
+  color: var(--bw-accent-strong);
+  margin-right: 0.75rem;
+  font-weight: bold;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--bw-accent-strong);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.btn-link:hover {
+  color: var(--bw-accent-strong);
+  transform: translateX(5px);
+}
+
+.rental-cta {
+  text-align: center;
+  background: var(--bw-surface);
+  padding: 3rem;
+  border-radius: 12px;
+  border: 1px solid var(--bw-border);
+}
+
+.rental-cta h3 {
+  font-size: 1.75rem;
+  color: var(--bw-text);
+  margin-bottom: 1rem;
+}
+
+.rental-cta p {
+  color: var(--bw-text-muted);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .rentals {
+    padding: 4rem 1.5rem;
+  }
+
+  .rentals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rental-cta {
+    padding: 2rem;
+  }
+}
+
+
+
+
+
+
+

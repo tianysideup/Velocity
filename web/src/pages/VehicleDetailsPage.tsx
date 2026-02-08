@@ -1,0 +1,500 @@
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { FaStar, FaCar, FaGasPump, FaUsers, FaCog, FaCheck, FaTimes, FaPrint, FaDownload } from 'react-icons/fa';
+import { getAllVehicles, type Vehicle } from '../services/vehicleService';
+import { addRental } from '../services/rentalService';
+import { useAuth } from '../contexts/AuthContext';
+import '../styles/VehicleDetailsPage.css';
+import ConfirmationModal from '../components/ConfirmationModal';
+import '../styles/ConfirmationModal.css';
+
+const VehicleDetailsPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showTransaction, setShowTransaction] = useState(false);
+  const [pickupDate, setPickupDate] = useState('');
+  const [returnDate, setReturnDate] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [confirmationNumber, setConfirmationNumber] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const receiptRef = useRef<HTMLDivElement>(null);
+
+  const isFormValid = () => {
+    return pickupDate && returnDate && fullName.trim() && phoneNumber.trim() && licenseFile;
+  };
+
+  const calculateDays = () => {
+    if (!pickupDate || !returnDate) return 1;
+    const pickup = new Date(pickupDate);
+    const returnD = new Date(returnDate);
+    const diffTime = Math.abs(returnD.getTime() - pickup.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 1;
+  };
+
+  const days = calculateDays();
+  const subtotal = vehicle ? vehicle.price * days : 0;
+  const deposit = subtotal * 0.1;
+  const total = subtotal + deposit;
+
+  useEffect(() => {
+    loadVehicle();
+  }, [id]);
+
+  useEffect(() => {
+    if (currentUser?.phoneNumber) {
+      setPhoneNumber(currentUser.phoneNumber);
+    }
+  }, [currentUser]);
+
+  const loadVehicle = async () => {
+    try {
+      const vehicles = await getAllVehicles();
+      const found = vehicles.find(v => v.id === id);
+      setVehicle(found || null);
+    } catch (error) {
+      console.error('Error loading vehicle:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateConfirmationNumber = () => {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 10000);
+    return `VR${timestamp}${random}`.substring(0, 16).toUpperCase();
+  };
+
+  const handleConfirmReservation = () => {
+    setIsModalOpen(true);
+  };
+
+  const proceedWithReservation = async () => {
+    if (!vehicle || !currentUser) return;
+
+    try {
+      const confNumber = generateConfirmationNumber();
+      setConfirmationNumber(confNumber);
+
+      // Save rental transaction to database
+      await addRental({
+        confirmationNumber: confNumber,
+        vehicleName: vehicle.name,
+        vehicleType: vehicle.type,
+        vehicleImage: vehicle.image,
+        dailyRate: vehicle.price,
+        customerName: fullName,
+        customerEmail: currentUser.email || '',
+        customerPhone: phoneNumber,
+        pickupDate: pickupDate,
+        returnDate: returnDate,
+        numberOfDays: days,
+        subtotal: subtotal,
+        deposit: deposit,
+        totalAmount: total,
+        status: 'pending',
+        createdAt: new Date()
+      });
+
+      setShowReceipt(true);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Error saving rental:', error);
+      alert('Failed to confirm reservation. Please try again.');
+      setIsModalOpen(false);
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownload = () => {
+    window.print();
+  };
+
+  if (loading) {
+    return (
+      <div className="vehicle-details-loading">
+        <p>Loading vehicle details...</p>
+      </div>
+    );
+  }
+
+  if (!vehicle) {
+    return (
+      <div className="vehicle-not-found">
+        <h2>Vehicle not found</h2>
+      </div>
+    );
+  }
+
+  return (
+    <div className="vehicle-details-page">
+      <div className="breadcrumbs">
+        <span onClick={() => navigate('/')} className="breadcrumb-link">Home</span>
+        <span className="breadcrumb-separator">/</span>
+        <span onClick={() => navigate('/rentals')} className="breadcrumb-link">Rentals</span>
+        <span className="breadcrumb-separator">/</span>
+        <span onClick={() => !showTransaction && navigate(`/vehicle/${id}`)} className={!showTransaction ? "breadcrumb-link" : "breadcrumb-current"}>{vehicle.name}</span>
+        {showTransaction && (
+          <>
+            <span className="breadcrumb-separator">/</span>
+            <span className="breadcrumb-current">Book Now</span>
+          </>
+        )}
+      </div>
+
+      {!showTransaction ? (
+        <div className="details-container">
+          <div className="details-content">
+            <div className="image-section">
+              <div className="main-image">
+                <img src={vehicle.image} alt={vehicle.name} />
+                {!vehicle.available && (
+                  <div className="unavailable-overlay">
+                    <span>Currently Unavailable</span>
+                  </div>
+                )}
+              </div>
+              <div className="thumbnail-grid">
+                <div className="thumbnail thumbnail-left">
+                  <img src={vehicle.image} alt={`${vehicle.name} view 1`} />
+                </div>
+                <div className="thumbnail thumbnail-right">
+                  <img src={vehicle.image} alt={`${vehicle.name} view 2`} />
+                </div>
+              </div>
+            </div>
+
+            <div className="info-section">
+              <div className="header-row">
+                <div className="title-block">
+                  <span className="vehicle-type-badge">{vehicle.type}</span>
+                  <h1>{vehicle.name}</h1>
+                </div>
+                <div className="rating-display">
+                  <FaStar className="star-icon" />
+                  <span className="rating-number">{vehicle.rating}</span>
+                </div>
+              </div>
+
+              <div className="specs-row">
+                <div className="spec-item">
+                  <FaCar />
+                  <span>{vehicle.type}</span>
+                </div>
+                <div className="spec-item">
+                  <FaGasPump />
+                  <span>Gasoline</span>
+                </div>
+                <div className="spec-item">
+                  <FaUsers />
+                  <span>5 Seats</span>
+                </div>
+                <div className="spec-item">
+                  <FaCog />
+                  <span>Automatic</span>
+                </div>
+              </div>
+
+              <div className="features-section">
+                <h3>What's Included</h3>
+                <div className="features-grid">
+                  <span><FaCheck /> Air Conditioning</span>
+                  <span><FaCheck /> Bluetooth</span>
+                  <span><FaCheck /> GPS Navigation</span>
+                  <span><FaCheck /> Backup Camera</span>
+                  <span><FaCheck /> Cruise Control</span>
+                  <span><FaCheck /> USB Ports</span>
+                </div>
+              </div>
+
+              <div className="terms-row">
+              
+                <span>License required</span>
+                <span>10% down payment required</span>
+             
+              </div>
+
+              <div className="pricing-section">
+                <div className="price-display">
+                  <span className="price-amount">${vehicle.price}</span>
+                  <span className="price-period">/day</span>
+                </div>
+                <button 
+                  className="book-now-button" 
+                  disabled={!vehicle.available}
+                  onClick={() => setShowTransaction(true)}
+                >
+                  {vehicle.available ? 'Reserve Now' : 'Unavailable'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="summary-containers-wrapper">
+          <div className="details-container form-container">
+            <div className="transaction-content">
+              <h2>Complete Your Reservation</h2>
+              <div className="booking-form">
+                <div className="form-section">
+                  <h3>Rental Details</h3>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Pick-up Date</label>
+                      <input 
+                        type="date" 
+                        className="form-input" 
+                        value={pickupDate}
+                        onChange={(e) => setPickupDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Return Date</label>
+                      <input 
+                        type="date" 
+                        className="form-input" 
+                        value={returnDate}
+                        onChange={(e) => setReturnDate(e.target.value)}
+                        min={pickupDate || new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-section">
+                  <h3>Personal Information</h3>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Full Name</label>
+                      <input 
+                        type="text" 
+                        className="form-input" 
+                        placeholder="John Doe" 
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Email Address</label>
+                      <input type="email" className="form-input" value={currentUser?.email || ''} readOnly />
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Phone Number</label>
+                      <input 
+                        type="tel" 
+                        className="form-input" 
+                        value={phoneNumber} 
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder="+1 (555) 000-0000" 
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Driver's License Photo</label>
+                      <input 
+                        type="file" 
+                        className="form-input" 
+                        accept="image/*" 
+                        onChange={(e) => setLicenseFile(e.target.files?.[0] || null)}
+                      />
+                      {licenseFile && <span className="file-name">{licenseFile.name}</span>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="details-container summary-container">
+              <div className="transaction-content">
+                <div className="booking-summary">
+                  <h3>Booking Summary</h3>
+                  
+                  <div className="summary-vehicle">
+                    <img src={vehicle.image} alt={vehicle.name} />
+                    <div>
+                      <h4>{vehicle.name}</h4>
+                      <p>{vehicle.type}</p>
+                    </div>
+                  </div>
+
+                  <div className="summary-details">
+                    <div className="summary-row">
+                      <span>Daily Rate</span>
+                      <span>${vehicle.price}</span>
+                    </div>
+                    <div className="summary-row">
+                      <span>Number of Days</span>
+                    <span>{days}</span>
+                  </div>
+                  <div className="summary-row">
+                    <span>Subtotal</span>
+                    <span>${subtotal.toFixed(0)}</span>
+                  </div>
+                  <div className="summary-row">
+                    <span>Down Payment (10%)</span>
+                    <span>${deposit.toFixed(0)}</span>
+                  </div>
+                  <div className="summary-divider"></div>
+                  <div className="summary-row summary-total">
+                    <span>Total Amount</span>
+                    <span>${total.toFixed(0)}</span>
+                    </div>
+                  </div>
+
+                  <button 
+                    className="confirm-button" 
+                    onClick={handleConfirmReservation}
+                    disabled={!isFormValid()}
+                  >
+                    Confirm Reservation
+                  </button>
+
+                  <div className="summary-note">
+                    <p>* Down payment (10% of total) required to confirm reservation</p>
+                 
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      )}
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={proceedWithReservation}
+        message="Are you sure you want to confirm this reservation?"
+      />
+
+      {showReceipt && vehicle && (
+        <div className="receipt-modal-overlay" onClick={() => setShowReceipt(false)}>
+          <div className="receipt-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal" onClick={() => setShowReceipt(false)}>
+              <FaTimes />
+            </button>
+            
+            <div className="receipt-actions no-print">
+              <button className="action-button" onClick={handlePrint}>
+                <FaPrint /> Print
+              </button>
+              <button className="action-button" onClick={handleDownload}>
+                <FaDownload /> Download
+              </button>
+            </div>
+
+            <div className="receipt-content" ref={receiptRef}>
+              <div className="receipt-header">
+                <h2>RENTAL CONFIRMATION RECEIPT</h2>
+                <div className="receipt-logo">Velocity</div>
+              </div>
+
+              <div className="receipt-info">
+                <div className="info-row">
+                  <span className="label">Confirmation Number:</span>
+                  <span className="value confirmation-number">{confirmationNumber}</span>
+                </div>
+                <div className="info-row">
+                  <span className="label">Date Issued:</span>
+                  <span className="value">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+              </div>
+
+              <div className="receipt-section">
+                <h3>Customer Information</h3>
+                <div className="section-content">
+                  <div className="info-row">
+                    <span className="label">Name:</span>
+                    <span className="value">{fullName || 'N/A'}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="label">Email:</span>
+                    <span className="value">{currentUser?.email || 'N/A'}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="label">Phone:</span>
+                    <span className="value">{phoneNumber || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="receipt-section">
+                <h3>Vehicle Information</h3>
+                <div className="section-content">
+                  <div className="info-row">
+                    <span className="label">Vehicle:</span>
+                    <span className="value">{vehicle.name}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="label">Type:</span>
+                    <span className="value">{vehicle.type}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="label">Daily Rate:</span>
+                    <span className="value">${vehicle.price}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="receipt-section">
+                <h3>Rental Period</h3>
+                <div className="section-content">
+                  <div className="info-row">
+                    <span className="label">Pick-up Date:</span>
+                    <span className="value">{pickupDate ? new Date(pickupDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="label">Return Date:</span>
+                    <span className="value">{returnDate ? new Date(returnDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="label">Duration:</span>
+                    <span className="value">{days} {days === 1 ? 'Day' : 'Days'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="receipt-section">
+                <h3>Payment Summary</h3>
+                <div className="section-content">
+                  <div className="info-row">
+                    <span className="label">Subtotal ({days} {days === 1 ? 'day' : 'days'} × ${vehicle.price}):</span>
+                    <span className="value">${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="label">Down Payment (10%):</span>
+                    <span className="value">${deposit.toFixed(2)}</span>
+                  </div>
+                  <div className="receipt-divider"></div>
+                  <div className="info-row total-row">
+                    <span className="label">Total Amount:</span>
+                    <span className="value">${total.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="receipt-footer">
+                <p className="important-notice">IMPORTANT: Please present this confirmation receipt at our store to complete your reservation.</p>
+                <p className="terms">Terms & Conditions: Valid driver's license required. Down payment due at reservation confirmation. Remaining balance due at vehicle pick-up. Free cancellation within 24 hours.</p>
+                <p className="thank-you">Thank you for choosing Velocity!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default VehicleDetailsPage;

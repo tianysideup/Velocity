@@ -1,0 +1,151 @@
+.navbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 80px);
+  max-width: 1400px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  border-radius: 30px;
+  border: 1px solid var(--bw-border-strong);
+}
+
+.navbar.scrolled {
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100px;
+}
+
+.nav-logo img {
+  height: 30px;
+  object-fit: contain;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-links a:hover {
+  color: var(--bw-accent-strong);
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--bw-accent-strong);
+  transition: width 0.3s;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-logo {
+  text-decoration: none;
+  display: block;
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.menu-toggle span {
+  width: 25px;
+  height: 2px;
+  background: #1a1a1a;
+  transition: all 0.3s;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    top: 10px;
+    width: calc(100% - 20px);
+    border-radius: 20px;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .nav-logo img {
+    height: 38px;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 110px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: #ffffff;
+    padding: 2rem;
+    gap: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    border-radius: 20px;
+  }
+
+  .nav-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(7px, 7px);
+  }
+
+  .menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+  }
+}
+
+
+
+
+
+
+
