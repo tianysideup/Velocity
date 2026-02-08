@@ -3,6 +3,7 @@ import Hero from '../components/Hero'
 import About from '../components/About'
 import Testimonials from '../components/Testimonials'
 import Contact from '../components/Contact'
+import AppDownloadNotification from '../components/AppDownloadNotification'
 import '../styles/HomePage.css'
 import { getAllVehicles, type Vehicle } from '../services/vehicleService'
 import { FaHeadset, FaBolt, FaShieldAlt, FaRegClock, FaTag, FaTruck, FaStar, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
@@ -219,6 +220,7 @@ const HomePage = () => {
 
       <Testimonials />
       <Contact />
+      <AppDownloadNotification />
     </>
   );
 };

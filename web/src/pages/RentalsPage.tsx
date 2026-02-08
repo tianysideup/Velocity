@@ -14,6 +14,7 @@ const RentalsPage = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     loadVehicles();
@@ -137,14 +138,67 @@ const RentalsPage = () => {
         </aside>
 
         <main className="vehicles-section">
-          <div className="search-bar">
-            <FaSearch />
-            <input
-              type="text"
-              placeholder="Search vehicles..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div className="search-filter-container">
+            <div className="search-bar">
+              <FaSearch />
+              <input
+                type="text"
+                placeholder="Search vehicles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <button 
+              className="filter-toggle-btn"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <FaFilter />
+              <span>Filters</span>
+            </button>
+
+            {/* Dropdown Filters for Tablet/Laptop */}
+            <div className={`filters-dropdown ${showFilters ? 'show' : ''}`}>
+              <div className="filter-group">
+                <label>Vehicle Type</label>
+                <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
+                  <option value="all">All Types</option>
+                  <option value="sedan">Sedan</option>
+                  <option value="suv">SUV</option>
+                  <option value="electric">Electric</option>
+                  <option value="sports">Sports</option>
+                  <option value="luxury">Luxury</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label>Price Range</label>
+                <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+                  <option value="all">All Prices</option>
+                  <option value="low">Under $100/day</option>
+                  <option value="mid">$100 - $200/day</option>
+                  <option value="high">$200+/day</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label>Sort By</label>
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                  <option value="featured">Featured</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="rating">Highest Rated</option>
+                </select>
+              </div>
+
+              <button className="clear-filters" onClick={() => {
+                setSelectedType('all');
+                setPriceRange('all');
+                setSortBy('featured');
+                setSearchTerm('');
+              }}>
+                Clear All Filters
+              </button>
+            </div>
           </div>
 
           <div className="results-info">

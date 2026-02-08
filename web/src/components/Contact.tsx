@@ -42,99 +42,129 @@ const Contact = () => {
   return (
     <section id="contact" className="contact">
       <div className="contact-container">
-        <h2 className="section-title">Get in Touch</h2>
-        <p className="section-subtitle">
-          Have questions? We're here to help. Reach out and let's discuss your rental needs.
-        </p>
+        <div className="contact-header">
+          <h2 className="section-title">Contact Us</h2>
+          <p className="section-subtitle">
+            Ready to get started? Get in touch and we'll help you find the perfect rental solution.
+          </p>
+        </div>
 
         <div className="contact-content">
-          <div className="contact-info">
-            <h3>Contact Information</h3>
-            
-            <div className="info-item">
-              <div className="info-icon"><FaMapMarkerAlt /></div>
-              <div>
-                <h4>Address</h4>
-                <p>123 Business District<br />Your City, ST 12345</p>
+          <div className="contact-left">
+            <div className="contact-info-cards">
+              <div className="info-card">
+                <div className="info-card-icon">
+                  <FaPhone />
+                </div>
+                <div className="info-card-content">
+                  <h4>Call Us</h4>
+                  <p>(555) 123-4567</p>
+                  <span className="info-label">Mon-Sat, 8AM-6PM</span>
+                </div>
               </div>
-            </div>
 
-            <div className="info-item">
-              <div className="info-icon"><FaPhone /></div>
-              <div>
-                <h4>Phone</h4>
-                <p>(555) 123-4567</p>
+              <div className="info-card">
+                <div className="info-card-icon">
+                  <FaEnvelope />
+                </div>
+                <div className="info-card-content">
+                  <h4>Email Us</h4>
+                  <p>info@velocity.com</p>
+                  <span className="info-label">We'll respond within 24hrs</span>
+                </div>
               </div>
-            </div>
 
-            <div className="info-item">
-              <div className="info-icon"><FaEnvelope /></div>
-              <div>
-                <h4>Email</h4>
-                <p>info@velocity.com</p>
+              <div className="info-card">
+                <div className="info-card-icon">
+                  <FaMapMarkerAlt />
+                </div>
+                <div className="info-card-content">
+                  <h4>Visit Us</h4>
+                  <p>123 Business District</p>
+                  <span className="info-label">Your City, ST 12345</span>
+                </div>
               </div>
-            </div>
 
-            <div className="info-item">
-              <div className="info-icon"><FaClock /></div>
-              <div>
-                <h4>Business Hours</h4>
-                <p>Mon - Fri: 8AM - 6PM<br />Sat: 9AM - 4PM</p>
+              <div className="info-card">
+                <div className="info-card-icon">
+                  <FaClock />
+                </div>
+                <div className="info-card-content">
+                  <h4>Working Hours</h4>
+                  <p>Mon - Fri: 8AM - 6PM</p>
+                  <span className="info-label">Sat: 9AM - 4PM</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <form className="contact-form" onSubmit={handleSubmit}>
-            {error && <div className="error-message">{error}</div>}
-            {success && <div className="success-message">{success}</div>}
-            
-            <div className="form-group">
-              <input
-                type="text"
-                name="name"
-                placeholder="Your Name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          <div className="contact-right">
+            <div className="form-wrapper">
+              <h3 className="form-title">Send us a message</h3>
+              
+              {error && <div className="alert alert-error">{error}</div>}
+              {success && <div className="alert alert-success">{success}</div>}
+              
+              <form className="contact-form" onSubmit={handleSubmit}>
+                <div className="form-row">
+                  <div className="form-field">
+                    <label htmlFor="name">Full Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
 
-            <div className="form-group">
-              <input
-                type="email"
-                name="email"
-                placeholder="Your Email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
+                  <div className="form-field">
+                    <label htmlFor="phone">Phone Number</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      placeholder="(555) 123-4567"
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
 
-            <div className="form-group">
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Phone Number"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-            </div>
+                <div className="form-field">
+                  <label htmlFor="email">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="john.doe@example.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-            <div className="form-group">
-              <textarea
-                name="message"
-                placeholder="Your Message"
-                rows={5}
-                value={formData.message}
-                onChange={handleChange}
-                required
-              ></textarea>
-            </div>
+                <div className="form-field">
+                  <label htmlFor="message">Message</label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    placeholder="Tell us about your rental needs..."
+                    rows={5}
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+                </div>
 
-            <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? 'Sending...' : 'Send Message'}
-            </button>
-          </form>
+                <button type="submit" className="submit-btn" disabled={submitting}>
+                  {submitting ? 'Sending...' : 'Send Message'}
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </section>

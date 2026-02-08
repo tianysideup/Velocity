@@ -18,7 +18,7 @@ const Testimonials = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const { currentUser } = useAuth();
 
-  const testimonialsPerPage = 3;
+  const testimonialsPerPage = 4;
   const totalPages = Math.ceil(testimonials.length / testimonialsPerPage);
   const startIndex = currentPage * testimonialsPerPage;
   const endIndex = startIndex + testimonialsPerPage;
