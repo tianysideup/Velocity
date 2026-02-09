@@ -60,9 +60,6 @@ const AdminSidebar = ({ onLogout }: AdminSidebarProps) => {
 
       <div className="sidebar-footer">
         <div className="user-info">
-          <div className="user-avatar">
-            {currentUser?.email?.charAt(0).toUpperCase()}
-          </div>
           <div className="user-details">
             <p className="user-email">{currentUser?.email}</p>
             <p className="user-role">Administrator</p>

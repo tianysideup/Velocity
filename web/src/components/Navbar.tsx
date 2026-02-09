@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaUser, FaChevronDown } from 'react-icons/fa';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const { currentUser, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +38,33 @@ const Navbar = () => {
     setMenuOpen(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setDropdownOpen(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.profile-dropdown-container')) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
@@ -57,7 +88,52 @@ const Navbar = () => {
           <li><Link to="/rentals" onClick={() => setMenuOpen(false)}>Rentals</Link></li>
           <li><a onClick={() => scrollToSection('testimonials')}>Testimonials</a></li>
           <li><a onClick={() => scrollToSection('contact')}>Contact</a></li>
+          
+          <li className="mobile-auth">
+            {currentUser ? (
+              <div className="mobile-profile">
+                <span className="mobile-user-email">{currentUser.email}</span>
+                <button onClick={handleLogout} className="mobile-logout-btn">Logout</button>
+              </div>
+            ) : (
+              <div className="mobile-auth-buttons">
+                <Link to="/login" className="auth-btn login-btn" onClick={() => setMenuOpen(false)}>Login</Link>
+                <Link to="/register" className="auth-btn register-btn" onClick={() => setMenuOpen(false)}>Register</Link>
+              </div>
+            )}
+          </li>
         </ul>
+
+        <div className="nav-auth">
+          {currentUser ? (
+            <div className="profile-dropdown-container">
+              <button 
+                className="profile-button"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+                <FaUser className="profile-icon" />
+                <div className="profile-info">
+                  <span className="profile-name">{currentUser.displayName || 'User'}</span>
+                  <span className="profile-email">{currentUser.email}</span>
+                </div>
+                <FaChevronDown className={`dropdown-icon ${dropdownOpen ? 'open' : ''}`} />
+              </button>
+              
+              {dropdownOpen && (
+                <div className="profile-dropdown">
+                  <button onClick={handleLogout} className="logout-button">
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="auth-buttons">
+              <Link to="/login" className="auth-btn login-btn" onClick={() => setMenuOpen(false)}>Login</Link>
+              <Link to="/register" className="auth-btn register-btn" onClick={() => setMenuOpen(false)}>Register</Link>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

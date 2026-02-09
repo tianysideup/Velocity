@@ -216,7 +216,7 @@ const RentalManagement = () => {
                     <td>{new Date(rental.pickupDate).toLocaleDateString()}</td>
                     <td>{new Date(rental.returnDate).toLocaleDateString()}</td>
                     <td>{rental.numberOfDays}</td>
-                    <td className="amount-cell">${rental.totalAmount.toFixed(2)}</td>
+                    <td className="amount-cell">₱{rental.totalAmount.toFixed(2)}</td>
                     <td>
                       <span className={`status-badge ${getStatusBadgeClass(rental.status)}`}>
                         {rental.status.toUpperCase()}
@@ -309,7 +309,7 @@ const RentalManagement = () => {
                       </div>
                       <div className="detail-row">
                         <span className="detail-label">Daily Rate:</span>
-                        <span className="detail-value">${selectedRental.dailyRate}</span>
+                        <span className="detail-value">₱{selectedRental.dailyRate}</span>
                       </div>
                     </div>
                   </div>
@@ -335,15 +335,15 @@ const RentalManagement = () => {
                   <h3><FaDollarSign /> Payment Summary</h3>
                   <div className="detail-row">
                     <span className="detail-label">Subtotal:</span>
-                    <span className="detail-value">${selectedRental.subtotal.toFixed(2)}</span>
+                    <span className="detail-value">₱{selectedRental.subtotal.toFixed(2)}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">Deposit (10%):</span>
-                    <span className="detail-value">${selectedRental.deposit.toFixed(2)}</span>
+                    <span className="detail-value">₱{selectedRental.deposit.toFixed(2)}</span>
                   </div>
                   <div className="detail-row total-row">
                     <span className="detail-label">Total Amount:</span>
-                    <span className="detail-value">${selectedRental.totalAmount.toFixed(2)}</span>
+                    <span className="detail-value">₱{selectedRental.totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
 

@@ -6,14 +6,14 @@ import {
   FaTools,
   FaLongArrowAltRight
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Hero.css';
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   const scrollToRentals = () => {
-    const element = document.getElementById('rentals');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate('/rentals');
   };
 
   const scrollToContact = () => {

@@ -115,23 +115,23 @@
 }
 
 .stat-icon.pending {
-  background: linear-gradient(135deg, rgba(108, 117, 125, 0.15) 0%, rgba(108, 117, 125, 0.08) 100%);
-  color: #6c757d;
-  box-shadow: 0 8px 24px rgba(108, 117, 125, 0.2);
+  background: linear-gradient(135deg, rgba(136, 136, 136, 0.15) 0%, rgba(136, 136, 136, 0.08) 100%);
+  color: #888;
+  box-shadow: 0 8px 24px rgba(136, 136, 136, 0.2);
 }
 
 .stat-card:has(.stat-icon.pending) {
-  --accent-color: #6c757d;
+  --accent-color: #888;
 }
 
 .stat-icon.approved {
-  background: linear-gradient(135deg, rgba(40, 251, 107, 0.15) 0%, rgba(40, 251, 107, 0.08) 100%);
-  color: #28fb6b;
-  box-shadow: 0 8px 24px rgba(40, 251, 107, 0.2);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.15) 0%, rgba(26, 26, 26, 0.08) 100%);
+  color: #1a1a1a;
+  box-shadow: 0 8px 24px rgba(26, 26, 26, 0.2);
 }
 
 .stat-card:has(.stat-icon.approved) {
-  --accent-color: #28fb6b;
+  --accent-color: #1a1a1a;
 }
 
 .stat-info h3 {
@@ -235,11 +235,8 @@
 
 .testimonial-header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1.5rem;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
 }
 
 .user-info {
@@ -282,7 +279,7 @@
 .user-info h3 {
   color: #1a1a1a;
   font-size: 1.15rem;
-  margin: 0 0 0.25rem 0;
+  margin: 0;
   font-weight: 600;
   letter-spacing: -0.2px;
 }
@@ -290,15 +287,17 @@
 .user-email {
   color: #666;
   font-size: 0.875rem;
-  margin: 0;
+  margin: 0 0 1rem 0;
   font-weight: 500;
+  display: block;
 }
 
 .testimonial-meta {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.75rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .rating {
@@ -327,17 +326,17 @@
 }
 
 .status-badge.pending {
-  background: linear-gradient(135deg, rgba(108, 117, 125, 0.15) 0%, rgba(108, 117, 125, 0.08) 100%);
-  color: #6c757d;
-  border: 1px solid rgba(108, 117, 125, 0.25);
-  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.15);
+  background: linear-gradient(135deg, rgba(136, 136, 136, 0.15) 0%, rgba(136, 136, 136, 0.08) 100%);
+  color: #888;
+  border: 1px solid rgba(136, 136, 136, 0.25);
+  box-shadow: 0 4px 12px rgba(136, 136, 136, 0.15);
 }
 
 .status-badge.approved {
-  background: linear-gradient(135deg, rgba(40, 251, 107, 0.15) 0%, rgba(40, 251, 107, 0.08) 100%);
-  color: #28fb6b;
-  border: 1px solid rgba(40, 251, 107, 0.25);
-  box-shadow: 0 4px 12px rgba(40, 251, 107, 0.15);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.15) 0%, rgba(26, 26, 26, 0.08) 100%);
+  color: #1a1a1a;
+  border: 1px solid rgba(26, 26, 26, 0.25);
+  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.15);
 }
 
 .testimonial-content {
@@ -419,10 +418,10 @@
 }
 
 .approve-btn {
-  background: linear-gradient(135deg, rgba(40, 251, 107, 0.15) 0%, rgba(40, 251, 107, 0.08) 100%);
-  color: #28fb6b;
-  border: 1px solid rgba(40, 251, 107, 0.3);
-  box-shadow: 0 4px 12px rgba(40, 251, 107, 0.15);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.15) 0%, rgba(26, 26, 26, 0.08) 100%);
+  color: #1a1a1a;
+  border: 1px solid rgba(26, 26, 26, 0.3);
+  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.15);
 }
 
 .approve-btn:hover:not(:disabled) {
@@ -433,10 +432,10 @@
 }
 
 .delete-btn {
-  background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(220, 53, 69, 0.08) 100%);
-  color: #dc3545;
-  border: 1px solid rgba(220, 53, 69, 0.3);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+  background: linear-gradient(135deg, rgba(102, 102, 102, 0.15) 0%, rgba(102, 102, 102, 0.08) 100%);
+  color: #666;
+  border: 1px solid rgba(102, 102, 102, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 102, 102, 0.15);
 }
 
 .delete-btn:hover:not(:disabled) {

@@ -45,11 +45,7 @@ const Footer = () => {
 
         <div className="footer-bottom">
           <p>&copy; {currentYear} Velocity. All rights reserved.</p>
-          <div className="footer-links">
-            <a href="#privacy">Privacy Policy</a>
-            <span>|</span>
-            <a href="#terms">Terms of Service</a>
-          </div>
+         
         </div>
       </div>
     </footer>

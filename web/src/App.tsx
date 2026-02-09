@@ -1,11 +1,9 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import UserProtectedRoute from './components/UserProtectedRoute'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import Chatbot from './components/Chatbot'
 import HomePage from './pages/HomePage'
 import RentalsPage from './pages/RentalsPage'
 import VehicleDetailsPage from './pages/VehicleDetailsPage'
@@ -20,7 +18,6 @@ import ContactManagement from './pages/admin/ContactManagement'
 import './App.css'
 
 function AppContent() {
-  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
@@ -28,7 +25,7 @@ function AppContent() {
 
   return (
     <div className="app">
-      {!isAdminRoute && !isAuthRoute && !isVehicleDetailsRoute && <Navbar />}
+      {!isAdminRoute && !isAuthRoute && <Navbar />}
       
       <Routes>
         {/* Public Routes */}
@@ -36,23 +33,9 @@ function AppContent() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         
-        {/* User Protected Routes */}
-        <Route 
-          path="/rentals" 
-          element={
-            <UserProtectedRoute>
-              <RentalsPage />
-            </UserProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/vehicle/:id" 
-          element={
-            <UserProtectedRoute>
-              <VehicleDetailsPage />
-            </UserProtectedRoute>
-          } 
-        />
+        {/* Public Routes - Anyone can view */}
+        <Route path="/rentals" element={<RentalsPage />} />
+        <Route path="/vehicle/:id" element={<VehicleDetailsPage />} />
         
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -78,17 +61,7 @@ function AppContent() {
         />
       </Routes>
 
-      {!isAdminRoute && !isAuthRoute && !isVehicleDetailsRoute && <Footer />}
-      
-      {/* Floating Chatbot - Only on public pages */}
-      {!isAdminRoute && !isAuthRoute && !isVehicleDetailsRoute && (
-        <>
-          <div className="chatbot-float" onClick={() => setIsChatbotOpen(true)}>
-            <img src="/img/Chatbot-Logo.png" alt="Chatbot" className="chatbot-icon" />
-          </div>
-          <Chatbot isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
-        </>
-      )}
+      {!isAdminRoute && !isAuthRoute && <Footer />}
     </div>
   );
 }

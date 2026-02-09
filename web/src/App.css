@@ -21,53 +21,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Floating Chatbot */
-.chatbot-float {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  z-index: 999;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.chatbot-float:hover {
-  transform: scale(1.05);
-}
-
-.chatbot-icon {
-  width: 90px;
-  height: 90px;
-  object-fit: contain;
-  animation: spin 3s linear infinite;
-}
-
-.chatbot-float:hover .chatbot-icon {
-  animation-play-state: paused;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 768px) {
-  .chatbot-float {
-    bottom: 20px;
-    right: 20px;
-  }
-  
-  .chatbot-icon {
-    width: 70px;
-    height: 70px;
-  }
-}
-
-
 
 
 

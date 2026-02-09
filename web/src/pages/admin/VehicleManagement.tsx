@@ -186,7 +186,7 @@ const VehicleManagement = () => {
                   <h3>{vehicle.name}</h3>
                   <div className="vehicle-details">
                     <span className="type-badge">{vehicle.type}</span>
-                    <span className="price">${vehicle.price}/day</span>
+                    <span className="price">₱{vehicle.price}/day</span>
                     <span className="rating">{vehicle.rating} ⭐</span>
                   </div>
                   <p className="description">{vehicle.description}</p>
@@ -249,13 +249,16 @@ const VehicleManagement = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Price per Day ($)</label>
+                  <label>Price per Day (₱)</label>
                   <input
-                    type="number"
+                    type="text"
                     value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setFormData({...formData, price: value ? Number(value) : 0});
+                    }}
                     required
-                    min="0"
+                    placeholder="0"
                   />
                 </div>
               </div>
@@ -284,19 +287,6 @@ const VehicleManagement = () => {
               </div>
 
               <div className="form-row">
-                <div className="form-group">
-                  <label>Rating (1-5)</label>
-                  <input
-                    type="number"
-                    value={formData.rating}
-                    onChange={(e) => setFormData({...formData, rating: Number(e.target.value)})}
-                    required
-                    min="1"
-                    max="5"
-                    step="0.1"
-                  />
-                </div>
-
                 <div className="form-group">
                   <label>Status</label>
                   <select

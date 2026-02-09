@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { FaLock, FaUser } from 'react-icons/fa';
@@ -8,14 +8,38 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login, currentUser } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
+  const [checkingRole, setCheckingRole] = useState(true);
+  const { login, logout, currentUser, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
-  if (currentUser) {
-    navigate('/admin/dashboard');
-  }
+  // Check if already logged in as admin (only after auth finishes loading)
+  useEffect(() => {
+    const checkRole = async () => {
+      if (loading) return; // Wait for auth to initialize
+      
+      if (!currentUser) {
+        setCheckingRole(false);
+        return;
+      }
+
+      try {
+        const { doc, getDoc } = await import('firebase/firestore');
+        const { db } = await import('../../config/firebase');
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        const userData = userDoc.data();
+        if (userData?.role === 'admin') {
+          navigate('/admin/dashboard', { replace: true });
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking role:', error);
+      }
+      setCheckingRole(false);
+    };
+
+    checkRole();
+  }, [currentUser, loading, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -25,11 +49,28 @@ const AdminLogin = () => {
       return;
     }
 
+    if (submitting) return;
+
     try {
       setError('');
-      setLoading(true);
-      await login(email, password);
-      navigate('/admin/dashboard');
+      setSubmitting(true);
+      
+      console.log('Attempting admin login with email:', email);
+      const role = await login(email, password);
+      console.log('Login returned role:', role);
+      
+      // Check if user (non-admin) is trying to login through admin page
+      if (role !== 'admin') {
+        console.log('Role is not admin, logging out. Role received:', role);
+        await logout();
+        setError('Access denied. Admin credentials required. Your account role: ' + (role || 'unknown'));
+        setSubmitting(false);
+        return;
+      }
+      
+      console.log('Admin login successful, navigating to dashboard');
+      // Admin user - navigate to dashboard
+      navigate('/admin/dashboard', { replace: true });
     } catch (err: any) {
       console.error('Login error:', err);
       if (err.code === 'auth/invalid-credential') {
@@ -41,10 +82,24 @@ const AdminLogin = () => {
       } else {
         setError('Failed to login. Please try again.');
       }
-    } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  // Show loading while auth initializes or checking role
+  if (loading || checkingRole) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        background: '#f5f5f5'
+      }}>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-login-page">
@@ -69,7 +124,7 @@ const AdminLogin = () => {
               placeholder="admin@velocity.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
+              disabled={submitting}
               autoComplete="email"
             />
           </div>
@@ -84,13 +139,13 @@ const AdminLogin = () => {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
+              disabled={submitting}
               autoComplete="current-password"
             />
           </div>
 
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+          <button type="submit" className="login-btn" disabled={submitting}>
+            {submitting ? 'Logging in...' : 'Login'}
           </button>
         </form>
 

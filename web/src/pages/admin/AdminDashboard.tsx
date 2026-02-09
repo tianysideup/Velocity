@@ -69,36 +69,6 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="stat-card unavailable">
-            <div className="stat-icon">
-              <FaCar />
-            </div>
-            <div className="stat-info">
-              <h3>{stats.unavailableVehicles}</h3>
-              <p>Rented</p>
-            </div>
-          </div>
-
-          <div className="stat-card price">
-            <div className="stat-icon">
-              <FaChartLine />
-            </div>
-            <div className="stat-info">
-              <h3>${stats.averagePrice}</h3>
-              <p>Avg Price/Day</p>
-            </div>
-          </div>
-
-          <div className="stat-card rentals">
-            <div className="stat-icon">
-              <FaReceipt />
-            </div>
-            <div className="stat-info">
-              <h3>{stats.totalRentals}</h3>
-              <p>Total Rentals</p>
-            </div>
-          </div>
-
           <div className="stat-card active-rentals">
             <div className="stat-icon">
               <FaReceipt />
@@ -109,22 +79,12 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="stat-card pending-rentals">
-            <div className="stat-icon">
-              <FaReceipt />
-            </div>
-            <div className="stat-info">
-              <h3>{stats.pendingRentals}</h3>
-              <p>Pending Rentals</p>
-            </div>
-          </div>
-
           <div className="stat-card revenue">
             <div className="stat-icon">
               <FaDollarSign />
             </div>
             <div className="stat-info">
-              <h3>${stats.totalRevenue.toFixed(0)}</h3>
+              <h3>₱{stats.totalRevenue.toFixed(0)}</h3>
               <p>Total Revenue</p>
             </div>
           </div>
@@ -156,7 +116,7 @@ const AdminDashboard = () => {
                         </div>
                       </td>
                       <td><span className="type-badge">{vehicle.type}</span></td>
-                      <td>${vehicle.price}</td>
+                      <td>₱{vehicle.price}</td>
                       <td>{vehicle.rating} ⭐</td>
                       <td>
                         <span className={`status-badge ${vehicle.available ? 'available' : 'rented'}`}>

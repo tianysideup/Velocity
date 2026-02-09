@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -52,15 +53,17 @@ const RegisterPage = () => {
 
   return (
     <div className="register-page">
-      <div className="register-container">
-        <div className="register-card">
-          <div className="register-header">
-            <img src="/img/Logo.png" alt="Velocity" className="register-logo" />
-            <h2>Create Account</h2>
-            <p>Join Velocity to start renting vehicles</p>
-          </div>
+      <button className="back-button" onClick={() => navigate('/')}>
+        <FaArrowLeft />
+      </button>
+      <div className="register-card">
+        <div className="register-header">
+          <img src="/img/Logo.png" alt="Velocity" className="register-logo" />
+          <h2>Create Account</h2>
+          <p>Join Velocity to start renting vehicles</p>
+        </div>
 
-          {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleSubmit} className="register-form">
             <div className="form-group">
@@ -133,8 +136,7 @@ const RegisterPage = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default RegisterPage;

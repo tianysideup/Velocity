@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/LoginPage.css';
 
@@ -9,7 +10,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -17,26 +18,38 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      await login(email, password);
+      const role = await login(email, password);
+      
+      // Check if admin is trying to login through user page
+      if (role === 'admin') {
+        await logout();
+        setError('Admin accounts must use the admin login page at /admin/login');
+        setLoading(false);
+        return;
+      }
+      
+      // Regular user - navigate to rentals
       navigate('/rentals');
     } catch (err: any) {
+      console.error('Login error:', err);
       setError('Invalid email or password');
-    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="login-page">
-      <div className="login-container">
-        <div className="login-card">
-          <div className="login-header">
-            <img src="/img/Logo.png" alt="Velocity" className="login-logo" />
-            <h2>Welcome Back</h2>
-            <p>Login to your account to continue</p>
-          </div>
+      <button className="back-button" onClick={() => navigate('/')}>
+        <FaArrowLeft />
+      </button>
+      <div className="login-card">
+        <div className="login-header">
+          <img src="/img/Logo.png" alt="Velocity" className="login-logo" />
+          <h2>Welcome Back</h2>
+          <p>Login to your account to continue</p>
+        </div>
 
-          {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
@@ -73,8 +86,7 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default LoginPage;

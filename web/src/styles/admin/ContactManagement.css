@@ -115,23 +115,23 @@
 }
 
 .stat-icon.pending {
-  background: linear-gradient(135deg, rgba(108, 117, 125, 0.15) 0%, rgba(108, 117, 125, 0.08) 100%);
-  color: #6c757d;
-  box-shadow: 0 8px 24px rgba(108, 117, 125, 0.2);
+  background: linear-gradient(135deg, rgba(136, 136, 136, 0.15) 0%, rgba(136, 136, 136, 0.08) 100%);
+  color: #888;
+  box-shadow: 0 8px 24px rgba(136, 136, 136, 0.2);
 }
 
 .stat-card:has(.stat-icon.pending) {
-  --accent-color: #6c757d;
+  --accent-color: #888;
 }
 
 .stat-icon.replied {
-  background: linear-gradient(135deg, rgba(40, 251, 107, 0.15) 0%, rgba(40, 251, 107, 0.08) 100%);
-  color: #28fb6b;
-  box-shadow: 0 8px 24px rgba(40, 251, 107, 0.2);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.15) 0%, rgba(26, 26, 26, 0.08) 100%);
+  color: #1a1a1a;
+  box-shadow: 0 8px 24px rgba(26, 26, 26, 0.2);
 }
 
 .stat-card:has(.stat-icon.replied) {
-  --accent-color: #28fb6b;
+  --accent-color: #1a1a1a;
 }
 
 .stat-info h3 {
@@ -218,12 +218,11 @@
 }
 
 .message-item {
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(20, 20, 20, 0.95) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
   border-radius: 16px;
   padding: 2rem;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -231,9 +230,9 @@
 }
 
 .message-item:hover {
-  border-color: rgba(0, 0, 0, 0.015);
+  border-color: #1a1a1a;
   transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .message-header {
@@ -285,7 +284,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgba(26, 26, 26, 0.5);
+  color: #666;
   font-size: 0.875rem;
   font-weight: 500;
 }
@@ -312,30 +311,30 @@
 }
 
 .status-badge.pending {
-  background: linear-gradient(135deg, rgba(108, 117, 125, 0.15) 0%, rgba(108, 117, 125, 0.08) 100%);
-  color: #6c757d;
-  border: 1px solid rgba(108, 117, 125, 0.25);
-  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.15);
+  background: linear-gradient(135deg, rgba(136, 136, 136, 0.15) 0%, rgba(136, 136, 136, 0.08) 100%);
+  color: #888;
+  border: 1px solid rgba(136, 136, 136, 0.25);
+  box-shadow: 0 4px 12px rgba(136, 136, 136, 0.15);
 }
 
 .status-badge.replied {
-  background: linear-gradient(135deg, rgba(40, 251, 107, 0.15) 0%, rgba(40, 251, 107, 0.08) 100%);
-  color: #28fb6b;
-  border: 1px solid rgba(40, 251, 107, 0.25);
-  box-shadow: 0 4px 12px rgba(40, 251, 107, 0.15);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.15) 0%, rgba(26, 26, 26, 0.08) 100%);
+  color: #1a1a1a;
+  border: 1px solid rgba(26, 26, 26, 0.25);
+  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.15);
 }
 
 .message-content,
 .reply-section {
   margin-bottom: 1.5rem;
   padding: 1.25rem;
-  background: rgba(0, 0, 0, 0.12);
+  background: #f7f7f7;
   border-radius: 10px;
 }
 
 .message-content h4,
 .reply-section h4 {
-  color: rgba(26, 26, 26, 0.7);
+  color: #666;
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -345,7 +344,7 @@
 
 .message-content p,
 .reply-section p {
-  color: rgba(26, 26, 26, 0.9);
+  color: #333;
   line-height: 1.8;
   margin: 0;
   font-size: 1rem;
@@ -353,13 +352,13 @@
 }
 
 .reply-section {
-  border-left: 3px solid rgba(40, 251, 107, 0.3);
+  border-left: 3px solid #1a1a1a;
 }
 
 .message-footer {
   margin-top: auto;
   padding-top: 1.25rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.6);
+  border-top: 1px solid #e0e0e0;
 }
 
 .message-date {
@@ -370,7 +369,7 @@
 }
 
 .message-date small {
-  color: rgba(26, 26, 26, 0.4);
+  color: #999;
   font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.2px;
@@ -418,24 +417,24 @@
 }
 
 .delete-btn {
-  background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(220, 53, 69, 0.08) 100%);
-  color: #dc3545;
-  border: 1px solid rgba(220, 53, 69, 0.3);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+  background: linear-gradient(135deg, rgba(102, 102, 102, 0.15) 0%, rgba(102, 102, 102, 0.08) 100%);
+  color: #666;
+  border: 1px solid rgba(102, 102, 102, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 102, 102, 0.15);
 }
 
 .delete-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(220, 53, 69, 0.25) 0%, rgba(220, 53, 69, 0.15) 100%);
-  border-color: rgba(220, 53, 69, 0.5);
+  background: linear-gradient(135deg, rgba(102, 102, 102, 0.25) 0%, rgba(102, 102, 102, 0.15) 100%);
+  border-color: rgba(102, 102, 102, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.25);
+  box-shadow: 0 6px 20px rgba(102, 102, 102, 0.25);
 }
 
 .send-btn {
-  background: linear-gradient(135deg, rgba(40, 251, 107, 0.15) 0%, rgba(40, 251, 107, 0.08) 100%);
-  color: #28fb6b;
-  border: 1px solid rgba(40, 251, 107, 0.3);
-  box-shadow: 0 4px 12px rgba(40, 251, 107, 0.15);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.15) 0%, rgba(26, 26, 26, 0.08) 100%);
+  color: #1a1a1a;
+  border: 1px solid rgba(26, 26, 26, 0.3);
+  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.15);
 }
 
 .send-btn:hover:not(:disabled) {

@@ -242,7 +242,15 @@ const VehicleDetailsPage = () => {
                 <button 
                   className="book-now-button" 
                   disabled={!vehicle.available}
-                  onClick={() => setShowTransaction(true)}
+                  onClick={() => {
+                    if (vehicle.available) {
+                      if (!currentUser) {
+                        navigate('/login');
+                      } else {
+                        setShowTransaction(true);
+                      }
+                    }
+                  }}
                 >
                   {vehicle.available ? 'Reserve Now' : 'Unavailable'}
                 </button>

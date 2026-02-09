@@ -151,19 +151,21 @@ const TestimonialManagement = () => {
                     </div>
                     <div>
                       <h3>{testimonial.userName}</h3>
-                      <p className="user-email">{testimonial.userEmail}</p>
                     </div>
                   </div>
-                  <div className="testimonial-meta">
-                    <div className="rating">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <FaStar key={i} className="star" />
-                      ))}
-                    </div>
-                    <span className={`status-badge ${testimonial.status}`}>
-                      {testimonial.status}
-                    </span>
+                </div>
+                
+                <p className="user-email">{testimonial.userEmail}</p>
+                
+                <div className="testimonial-meta">
+                  <div className="rating">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <FaStar key={i} className="star" />
+                    ))}
                   </div>
+                  <span className={`status-badge ${testimonial.status}`}>
+                    {testimonial.status}
+                  </span>
                 </div>
 
                 <div className="testimonial-content">

@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { FaCar, FaFilter, FaSearch, FaStar } from 'react-icons/fa';
 import { getAllVehicles, type Vehicle } from '../services/vehicleService';
 import { initializeVehicles } from '../utils/initializeVehicles';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/RentalsPage.css';
 
 const RentalsPage = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
@@ -227,7 +229,15 @@ const RentalsPage = () => {
                     <button 
                       className="book-btn" 
                       disabled={!vehicle.available}
-                      onClick={() => vehicle.available && navigate(`/vehicle/${vehicle.id}`)}
+                      onClick={() => {
+                        if (vehicle.available) {
+                          if (!currentUser) {
+                            navigate('/login');
+                          } else {
+                            navigate(`/vehicle/${vehicle.id}`);
+                          }
+                        }
+                      }}
                     >
                       {vehicle.available ? 'Book Now' : 'Unavailable'}
                     </button>

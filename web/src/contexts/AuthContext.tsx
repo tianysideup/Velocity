@@ -7,12 +7,13 @@ import {
   type User,
   type UserCredential
 } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<string | null>; // Returns role
   signup: (email: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
 }
@@ -35,8 +36,46 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<string | null> => {
+    console.log('[AuthContext] Login called with email:', email);
     await signInWithEmailAndPassword(auth, email, password);
+    console.log('[AuthContext] Firebase auth successful');
+    
+    // Get the user's role after login
+    const user = auth.currentUser;
+    console.log('[AuthContext] Current user:', user?.email, 'UID:', user?.uid);
+    
+    if (user) {
+      try {
+        console.log('[AuthContext] Fetching user document from Firestore...');
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        console.log('[AuthContext] User document exists:', userDoc.exists());
+        
+        if (!userDoc.exists() && email === 'admin@velocity.com') {
+          // Auto-create admin document if it doesn't exist
+          console.log('[AuthContext] Creating admin user document...');
+          await setDoc(doc(db, 'users', user.uid), {
+            email: email,
+            role: 'admin',
+            createdAt: new Date()
+          });
+          console.log('[AuthContext] Admin user document created!');
+          return 'admin';
+        }
+        
+        const userData = userDoc.data();
+        console.log('[AuthContext] User data:', userData);
+        
+        const role = userData?.role || 'user';
+        console.log('[AuthContext] Returning role:', role);
+        return role;
+      } catch (error) {
+        console.error('[AuthContext] Error fetching user role:', error);
+        return null;
+      }
+    }
+    console.log('[AuthContext] No current user found');
+    return null;
   };
 
   const signup = async (email: string, password: string) => {
