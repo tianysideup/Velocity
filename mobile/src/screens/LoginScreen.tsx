@@ -8,13 +8,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Image,
   Alert,
   ActivityIndicator
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type LoginScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Login'>;
@@ -24,20 +24,21 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      setError('Please fill in all fields');
       return;
     }
 
     try {
       setLoading(true);
+      setError('');
       await login(email, password);
-      // Navigation will be handled by the auth state change
     } catch (error: any) {
-      Alert.alert('Login Failed', error.message || 'Invalid email or password');
+      setError('Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -52,58 +53,70 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>VELOCITY</Text>
-          <Text style={styles.tagline}>Premium Car Rentals</Text>
-        </View>
-
-        <View style={styles.formContainer}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              placeholderTextColor="#666"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+        <View style={styles.card}>
+          <View style={styles.header}>
+            <Text style={styles.logoText}>VELOCITY</Text>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Login to your account to continue</Text>
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your password"
-              placeholderTextColor="#666"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-            />
+          {error ? <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View> : null}
+
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email Address</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="rgba(26, 26, 26, 0.4)"
+                value={email}
+                onChangeText={(text) => { setEmail(text); setError(''); }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your password"
+                placeholderTextColor="rgba(26, 26, 26, 0.4)"
+                value={password}
+                onChangeText={(text) => { setPassword(text); setError(''); }}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleLogin}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={['#000000', '#5b5b5b']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.buttonGradient}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.buttonText}>Login</Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
-            )}
-          </TouchableOpacity>
-
-          <View style={styles.signupContainer}>
-            <Text style={styles.signupText}>Don't have an account? </Text>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.signupLink}>Sign Up</Text>
+              <Text style={styles.footerLink}>Sign up here</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -115,92 +128,113 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#030303',
+    backgroundColor: '#f5f5f5',
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 24,
+    padding: 32,
   },
-  logoContainer: {
+  card: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 20,
+    padding: 48,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+  header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 32,
   },
   logoText: {
-    fontSize: 48,
+    fontSize: 42,
     fontWeight: 'bold',
-    color: '#fb6b28',
+    color: '#000000',
     letterSpacing: 2,
-  },
-  tagline: {
-    fontSize: 14,
-    color: '#999',
-    marginTop: 8,
-    letterSpacing: 1,
-  },
-  formContainer: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 20,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: '#2a2a2a',
+    marginBottom: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#fefefe',
+    color: '#1a1a1a',
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#999',
-    marginBottom: 32,
+    fontSize: 15,
+    color: 'rgba(26, 26, 26, 0.6)',
   },
-  inputContainer: {
-    marginBottom: 20,
+  errorContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.28)',
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 24,
+  },
+  errorText: {
+    color: '#000000',
+    textAlign: 'center',
+    fontSize: 14,
+  },
+  form: {
+    gap: 24,
+  },
+  inputGroup: {
+    gap: 8,
   },
   label: {
     fontSize: 14,
-    color: '#cccccc',
-    marginBottom: 8,
-    fontWeight: '600',
+    color: '#1a1a1a',
+    fontWeight: '500',
   },
   input: {
-    backgroundColor: '#0a0a0a',
-    borderWidth: 2,
-    borderColor: '#2a2a2a',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 10,
+    padding: 14,
     fontSize: 16,
-    color: '#fefefe',
+    color: '#1a1a1a',
   },
   button: {
-    backgroundColor: '#fb6b28',
-    borderRadius: 12,
-    padding: 18,
-    alignItems: 'center',
     marginTop: 8,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   buttonDisabled: {
     opacity: 0.6,
   },
+  buttonGradient: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    fontWeight: '600',
   },
-  signupContainer: {
+  footer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 24,
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
   },
-  signupText: {
-    color: '#999',
+  footerText: {
+    color: 'rgba(26, 26, 26, 0.6)',
     fontSize: 14,
   },
-  signupLink: {
-    color: '#fb6b28',
+  footerLink: {
+    color: '#000000',
     fontSize: 14,
     fontWeight: '600',
   },

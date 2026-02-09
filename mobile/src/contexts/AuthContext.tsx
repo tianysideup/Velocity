@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import { View, Text } from 'react-native';
 import { 
   User,
   createUserWithEmailAndPassword,
@@ -65,7 +66,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' }}>
+          <Text style={{ fontSize: 42, fontWeight: 'bold', color: '#000000', letterSpacing: 2 }}>VELOCITY</Text>
+        </View>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaStar, FaCar, FaGasPump, FaUsers, FaCog, FaCheck, FaTimes, FaPrint, FaDownload } from 'react-icons/fa';
+import { FaStar, FaCar, FaGasPump, FaUsers, FaCog, FaCheck, FaTimes, FaDownload } from 'react-icons/fa';
 import { getAllVehicles, type Vehicle } from '../services/vehicleService';
 import { addRental } from '../services/rentalService';
 import { useAuth } from '../contexts/AuthContext';
@@ -111,12 +111,23 @@ const VehicleDetailsPage = () => {
     }
   };
 
-  const handlePrint = () => {
+  const handleDownload = () => {
     window.print();
   };
 
-  const handleDownload = () => {
-    window.print();
+  const handleCloseReceipt = () => {
+    // Reset form states
+    setShowReceipt(false);
+    setPickupDate('');
+    setReturnDate('');
+    setFullName('');
+    setPhoneNumber(currentUser?.phoneNumber || '');
+    setLicenseFile(null);
+    setConfirmationNumber('');
+    setShowTransaction(false);
+    
+    // Redirect to rentals page
+    navigate('/rentals');
   };
 
   if (loading) {
@@ -379,16 +390,13 @@ const VehicleDetailsPage = () => {
       />
 
       {showReceipt && vehicle && (
-        <div className="receipt-modal-overlay" onClick={() => setShowReceipt(false)}>
+        <div className="receipt-modal-overlay" onClick={handleCloseReceipt}>
           <div className="receipt-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="close-modal" onClick={() => setShowReceipt(false)}>
+            <button className="close-modal" onClick={handleCloseReceipt}>
               <FaTimes />
             </button>
             
             <div className="receipt-actions no-print">
-              <button className="action-button" onClick={handlePrint}>
-                <FaPrint /> Print
-              </button>
               <button className="action-button" onClick={handleDownload}>
                 <FaDownload /> Download
               </button>

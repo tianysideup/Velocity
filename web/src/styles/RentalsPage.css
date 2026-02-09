@@ -513,6 +513,13 @@
   }
 }
 
+/* Extra Small Mobile */
+@media (max-width: 400px) {
+  .vehicle-image {
+    height: 110px;
+  }
+}
+
 /* Small Mobile */
 @media (max-width: 440px) {
   .rentals-page {
@@ -604,6 +611,10 @@
 
   .vehicle-card {
     max-width: 100%;
+  }
+
+  .vehicle-image {
+    height: 140px;
   }
 
   .vehicle-info {
@@ -740,6 +751,10 @@
   .vehicles-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+  }
+
+  .vehicle-image {
+    height: 150px;
   }
 }
 

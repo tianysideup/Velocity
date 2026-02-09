@@ -114,4 +114,45 @@
 .modal-confirm-btn:active {
   transform: translateY(0);
 }
+
+@media (max-width: 440px) {
+  .confirmation-modal-overlay {
+    padding: 0.75rem;
+  }
+
+  .confirmation-modal-content {
+    min-width: unset;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .confirmation-modal-header {
+    padding: 16px 18px;
+  }
+
+  .confirmation-modal-header h3 {
+    font-size: 16px;
+  }
+
+  .confirmation-modal-body {
+    padding: 18px;
+  }
+
+  .confirmation-modal-body p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .confirmation-modal-actions {
+    padding: 14px 18px;
+    gap: 10px;
+  }
+
+  .modal-cancel-btn,
+  .modal-confirm-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+    min-width: 80px;
+  }
+}
   
