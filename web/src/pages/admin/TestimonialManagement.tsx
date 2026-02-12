@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllTestimonials, updateTestimonialStatus, deleteTestimonial, type Testimonial } from '../../services/testimonialService';
+import { subscribeToTestimonials, updateTestimonialStatus, deleteTestimonial, type Testimonial } from '../../services/testimonialService';
 import { FaCheckCircle, FaTrash, FaStar, FaClock } from 'react-icons/fa';
 import AdminLayout from '../../components/AdminLayout';
 import '../../styles/admin/TestimonialManagement.css';
@@ -11,38 +11,51 @@ const TestimonialManagement = () => {
   const [processing, setProcessing] = useState<string | null>(null);
 
   useEffect(() => {
-    loadTestimonials();
+    console.log('Setting up real-time testimonial listener');
+    setLoading(true);
+    
+    // Subscribe to real-time updates
+    const unsubscribe = subscribeToTestimonials((data) => {
+      console.log('Received testimonial update:', data.length, 'testimonials');
+      setTestimonials(data);
+      setLoading(false);
+    });
+
+    // Cleanup listener on unmount
+    return () => {
+      console.log('Cleaning up testimonial listener');
+      unsubscribe();
+    };
   }, []);
 
-  const loadTestimonials = async () => {
-    try {
-      setLoading(true);
-      const data = await getAllTestimonials();
-      setTestimonials(data);
-    } catch (error) {
-      console.error('Error loading testimonials:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleApprove = async (id: string) => {
-    if (!id) return;
+    console.log('handleApprove called with id:', id);
+    
+    if (!id) {
+      alert('Invalid testimonial ID');
+      return;
+    }
     
     try {
       setProcessing(id);
       await updateTestimonialStatus(id, 'approved');
-      await loadTestimonials();
-    } catch (error) {
+      // No need to reload - real-time listener will update automatically
+      alert('Testimonial approved successfully!');
+    } catch (error: any) {
       console.error('Error approving testimonial:', error);
-      alert('Failed to approve testimonial');
+      alert(`Failed to approve testimonial: ${error.message || 'Unknown error'}`);
     } finally {
       setProcessing(null);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!id) return;
+    console.log('handleDelete called with id:', id);
+    
+    if (!id) {
+      alert('Invalid testimonial ID');
+      return;
+    }
     
     if (!confirm('Are you sure you want to delete this testimonial?')) {
       return;
@@ -51,10 +64,11 @@ const TestimonialManagement = () => {
     try {
       setProcessing(id);
       await deleteTestimonial(id);
-      await loadTestimonials();
-    } catch (error) {
+      // No need to reload - real-time listener will update automatically
+      alert('Testimonial deleted successfully!');
+    } catch (error: any) {
       console.error('Error deleting testimonial:', error);
-      alert('Failed to delete testimonial');
+      alert(`Failed to delete testimonial: ${error.message || 'Unknown error'}`);
     } finally {
       setProcessing(null);
     }
@@ -76,9 +90,7 @@ const TestimonialManagement = () => {
       <div className="testimonial-management">
         <div className="management-header">
           <h1>Testimonial Management</h1>
-          <button onClick={loadTestimonials} className="refresh-btn" disabled={loading}>
-            {loading ? 'Loading...' : 'Refresh'}
-          </button>
+        
         </div>
 
         <div className="stats-grid">

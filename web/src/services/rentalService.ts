@@ -6,7 +6,9 @@ import {
   doc, 
   getDocs,
   query,
+  where,
   orderBy,
+  onSnapshot,
   Timestamp 
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -14,6 +16,8 @@ import { db } from '../config/firebase';
 export interface Rental {
   id?: string;
   confirmationNumber: string;
+  vehicleId: string;
+  userId: string;
   vehicleName: string;
   vehicleType: string;
   vehicleImage: string;
@@ -25,7 +29,6 @@ export interface Rental {
   returnDate: string;
   numberOfDays: number;
   subtotal: number;
-  deposit: number;
   totalAmount: number;
   status: 'pending' | 'active' | 'completed' | 'cancelled';
   createdAt: Date;
@@ -94,4 +97,74 @@ export const updateRentalStatus = async (id: string, status: Rental['status']): 
     console.error('Error updating rental status:', error);
     throw error;
   }
+};
+
+// Get all rentals for a specific user
+export const getUserRentals = async (userId: string): Promise<Rental[]> => {
+  try {
+    const q = query(
+      collection(db, rentalsCollection),
+      where('userId', '==', userId),
+      orderBy('createdAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate() || new Date()
+      } as Rental;
+    });
+  } catch (error) {
+    console.error('Error getting user rentals:', error);
+    throw error;
+  }
+};
+
+// Subscribe to user rentals for real-time updates
+export const subscribeToUserRentals = (
+  userId: string,
+  callback: (rentals: Rental[]) => void
+): (() => void) => {
+  const q = query(
+    collection(db, rentalsCollection),
+    where('userId', '==', userId),
+    orderBy('createdAt', 'desc')
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const rentals = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate() || new Date()
+      } as Rental;
+    });
+    callback(rentals);
+  }, (error) => {
+    console.error('Error subscribing to user rentals:', error);
+    
+    // If index is missing, try without orderBy as fallback
+    if (error.code === 'failed-precondition' || error.message.includes('index')) {
+      console.log('Retrying query without orderBy...');
+      const fallbackQuery = query(
+        collection(db, rentalsCollection),
+        where('userId', '==', userId)
+      );
+      
+      return onSnapshot(fallbackQuery, (snapshot) => {
+        const rentals = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate() || new Date()
+          } as Rental;
+        }).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        callback(rentals);
+      });
+    }
+  });
 };

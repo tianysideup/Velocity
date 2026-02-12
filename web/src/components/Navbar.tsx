@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaChevronDown } from 'react-icons/fa';
+import { FaChevronDown, FaShoppingCart } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import { subscribeToUserRentals } from '../services/rentalService';
 import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [rentalCount, setRentalCount] = useState(0);
   const navigate = useNavigate();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, userProfile, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +20,19 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      const unsubscribe = subscribeToUserRentals(currentUser.uid, (rentals) => {
+        const activeCount = rentals.filter(
+          r => r.status === 'pending' || r.status === 'active'
+        ).length;
+        setRentalCount(activeCount);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [currentUser]);
 
   const scrollToSection = (id: string) => {
     // Navigate to home page first if not already there
@@ -89,6 +104,17 @@ const Navbar = () => {
           <li><a onClick={() => scrollToSection('testimonials')}>Testimonials</a></li>
           <li><a onClick={() => scrollToSection('contact')}>Contact</a></li>
           
+          {currentUser && (
+            <li className="mobile-cart-item">
+              <Link to="/notifications" className="mobile-cart-link" onClick={() => setMenuOpen(false)}>
+                <FaShoppingCart /> My Rentals
+                {rentalCount > 0 && (
+                  <span className="mobile-cart-badge">{rentalCount}</span>
+                )}
+              </Link>
+            </li>
+          )}
+          
           <li className="mobile-auth">
             {currentUser ? (
               <div className="mobile-profile">
@@ -106,14 +132,25 @@ const Navbar = () => {
 
         <div className="nav-auth">
           {currentUser ? (
-            <div className="profile-dropdown-container">
+            <>
+              <Link to="/notifications" className="cart-icon">
+                <FaShoppingCart />
+                {rentalCount > 0 && (
+                  <span className="cart-badge">{rentalCount}</span>
+                )}
+              </Link>
+              <div className="profile-dropdown-container">
               <button 
                 className="profile-button"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
-                <FaUser className="profile-icon" />
+                <div className="profile-avatar">
+                  <span className="avatar-text">
+                    {userProfile?.name?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
                 <div className="profile-info">
-                  <span className="profile-name">{currentUser.displayName || 'User'}</span>
+                  <span className="profile-name">{userProfile?.name || 'User'}</span>
                   <span className="profile-email">{currentUser.email}</span>
                 </div>
                 <FaChevronDown className={`dropdown-icon ${dropdownOpen ? 'open' : ''}`} />
@@ -127,6 +164,7 @@ const Navbar = () => {
                 </div>
               )}
             </div>
+            </>
           ) : (
             <div className="auth-buttons">
               <Link to="/login" className="auth-btn login-btn" onClick={() => setMenuOpen(false)}>Login</Link>

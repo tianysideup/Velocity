@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAdminAuth } from '../contexts/AdminAuthContext';
 import { FaTachometerAlt, FaCar, FaComments, FaEnvelope, FaSignOutAlt, FaReceipt } from 'react-icons/fa';
 import '../styles/admin/AdminSidebar.css';
 
@@ -8,7 +8,7 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar = ({ onLogout }: AdminSidebarProps) => {
-  const { currentUser } = useAuth();
+  const { adminUser } = useAdminAuth();
 
   return (
     <aside className="admin-sidebar">
@@ -61,7 +61,7 @@ const AdminSidebar = ({ onLogout }: AdminSidebarProps) => {
       <div className="sidebar-footer">
         <div className="user-info">
           <div className="user-details">
-            <p className="user-email">{currentUser?.email}</p>
+            <p className="user-email">{adminUser?.email}</p>
             <p className="user-role">Administrator</p>
           </div>
         </div>

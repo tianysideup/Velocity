@@ -102,7 +102,6 @@ const AdminDashboard = () => {
                     <th>Vehicle</th>
                     <th>Type</th>
                     <th>Price/Day</th>
-                    <th>Rating</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -117,7 +116,6 @@ const AdminDashboard = () => {
                       </td>
                       <td><span className="type-badge">{vehicle.type}</span></td>
                       <td>₱{vehicle.price}</td>
-                      <td>{vehicle.rating} ⭐</td>
                       <td>
                         <span className={`status-badge ${vehicle.available ? 'available' : 'rented'}`}>
                           {vehicle.available ? 'Available' : 'Rented'}

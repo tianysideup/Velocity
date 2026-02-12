@@ -49,5 +49,11 @@ const SAMPLE_VEHICLES: Omit<Vehicle, 'id'>[] = [
 ];
 
 export const initializeVehicles = async (): Promise<void> => {
-  await Promise.all(SAMPLE_VEHICLES.map((vehicle) => addVehicle(vehicle)));
+  console.log('🚗 Starting vehicle initialization...');
+  console.log('🚗 Vehicles to add:', SAMPLE_VEHICLES.length);
+  await Promise.all(SAMPLE_VEHICLES.map((vehicle) => {
+    console.log('🚗 Adding vehicle:', vehicle.name);
+    return addVehicle(vehicle);
+  }));
+  console.log('✅ Vehicle initialization complete');
 };

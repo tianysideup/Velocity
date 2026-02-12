@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaStar, FaCar, FaGasPump, FaUsers, FaCog, FaCheck, FaTimes, FaDownload } from 'react-icons/fa';
-import { getAllVehicles, type Vehicle } from '../services/vehicleService';
+import { FaCar, FaGasPump, FaCog, FaCheck, FaTimes, FaDownload } from 'react-icons/fa';
+import { getAllVehiclesForAdmin, type Vehicle } from '../services/vehicleService';
 import { addRental } from '../services/rentalService';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/VehicleDetailsPage.css';
@@ -11,7 +11,7 @@ import '../styles/ConfirmationModal.css';
 const VehicleDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, userProfile } = useAuth();
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [showTransaction, setShowTransaction] = useState(false);
@@ -19,14 +19,13 @@ const VehicleDetailsPage = () => {
   const [returnDate, setReturnDate] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [licenseFile, setLicenseFile] = useState<File | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
   const [confirmationNumber, setConfirmationNumber] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const receiptRef = useRef<HTMLDivElement>(null);
 
   const isFormValid = () => {
-    return pickupDate && returnDate && fullName.trim() && phoneNumber.trim() && licenseFile;
+    return pickupDate && returnDate && fullName.trim() && phoneNumber.trim();
   };
 
   const calculateDays = () => {
@@ -40,22 +39,23 @@ const VehicleDetailsPage = () => {
 
   const days = calculateDays();
   const subtotal = vehicle ? vehicle.price * days : 0;
-  const deposit = subtotal * 0.1;
-  const total = subtotal + deposit;
+  const total = subtotal;
 
   useEffect(() => {
     loadVehicle();
   }, [id]);
 
   useEffect(() => {
-    if (currentUser?.phoneNumber) {
-      setPhoneNumber(currentUser.phoneNumber);
+    if (userProfile) {
+      setFullName(userProfile.name || '');
+      setPhoneNumber(userProfile.phone || '');
     }
-  }, [currentUser]);
+  }, [userProfile]);
 
   const loadVehicle = async () => {
     try {
-      const vehicles = await getAllVehicles();
+      // Use getAllVehiclesForAdmin to find the vehicle even if it's currently reserved
+      const vehicles = await getAllVehiclesForAdmin();
       const found = vehicles.find(v => v.id === id);
       setVehicle(found || null);
     } catch (error) {
@@ -85,6 +85,8 @@ const VehicleDetailsPage = () => {
       // Save rental transaction to database
       await addRental({
         confirmationNumber: confNumber,
+        vehicleId: vehicle.id || '',
+        userId: currentUser.uid,
         vehicleName: vehicle.name,
         vehicleType: vehicle.type,
         vehicleImage: vehicle.image,
@@ -96,7 +98,6 @@ const VehicleDetailsPage = () => {
         returnDate: returnDate,
         numberOfDays: days,
         subtotal: subtotal,
-        deposit: deposit,
         totalAmount: total,
         status: 'pending',
         createdAt: new Date()
@@ -122,7 +123,6 @@ const VehicleDetailsPage = () => {
     setReturnDate('');
     setFullName('');
     setPhoneNumber(currentUser?.phoneNumber || '');
-    setLicenseFile(null);
     setConfirmationNumber('');
     setShowTransaction(false);
     
@@ -174,14 +174,6 @@ const VehicleDetailsPage = () => {
                   </div>
                 )}
               </div>
-              <div className="thumbnail-grid">
-                <div className="thumbnail thumbnail-left">
-                  <img src={vehicle.image} alt={`${vehicle.name} view 1`} />
-                </div>
-                <div className="thumbnail thumbnail-right">
-                  <img src={vehicle.image} alt={`${vehicle.name} view 2`} />
-                </div>
-              </div>
             </div>
 
             <div className="info-section">
@@ -189,10 +181,6 @@ const VehicleDetailsPage = () => {
                 <div className="title-block">
                   <span className="vehicle-type-badge">{vehicle.type}</span>
                   <h1>{vehicle.name}</h1>
-                </div>
-                <div className="rating-display">
-                  <FaStar className="star-icon" />
-                  <span className="rating-number">{vehicle.rating}</span>
                 </div>
               </div>
 
@@ -204,10 +192,6 @@ const VehicleDetailsPage = () => {
                 <div className="spec-item">
                   <FaGasPump />
                   <span>Gasoline</span>
-                </div>
-                <div className="spec-item">
-                  <FaUsers />
-                  <span>5 Seats</span>
                 </div>
                 <div className="spec-item">
                   <FaCog />
@@ -230,13 +214,12 @@ const VehicleDetailsPage = () => {
               <div className="terms-row">
               
                 <span>License required</span>
-                <span>10% down payment required</span>
              
               </div>
 
               <div className="pricing-section">
                 <div className="price-display">
-                  <span className="price-amount">${vehicle.price}</span>
+                  <span className="price-amount">₱{vehicle.price}</span>
                   <span className="price-period">/day</span>
                 </div>
                 <button 
@@ -315,19 +298,17 @@ const VehicleDetailsPage = () => {
                         type="tel" 
                         className="form-input" 
                         value={phoneNumber} 
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="+1 (555) 000-0000" 
+                        onChange={(e) => {
+                          const digitsOnly = e.target.value.replace(/\D/g, '');
+                          if (digitsOnly.length <= 11) {
+                            setPhoneNumber(digitsOnly);
+                          }
+                        }}
+                        placeholder="09123456789" 
+                        maxLength={11}
+                        required
                       />
-                    </div>
-                    <div className="form-group">
-                      <label>Driver's License Photo</label>
-                      <input 
-                        type="file" 
-                        className="form-input" 
-                        accept="image/*" 
-                        onChange={(e) => setLicenseFile(e.target.files?.[0] || null)}
-                      />
-                      {licenseFile && <span className="file-name">{licenseFile.name}</span>}
+                      <small style={{fontSize: '0.8rem', color: '#666', marginTop: '0.25rem', display: 'block'}}>{phoneNumber.length}/11 digits</small>
                     </div>
                   </div>
                 </div>
@@ -359,16 +340,12 @@ const VehicleDetailsPage = () => {
                   </div>
                   <div className="summary-row">
                     <span>Subtotal</span>
-                    <span>${subtotal.toFixed(0)}</span>
-                  </div>
-                  <div className="summary-row">
-                    <span>Down Payment (10%)</span>
-                    <span>${deposit.toFixed(0)}</span>
+                    <span>₱{subtotal.toFixed(0)}</span>
                   </div>
                   <div className="summary-divider"></div>
                   <div className="summary-row summary-total">
                     <span>Total Amount</span>
-                    <span>${total.toFixed(0)}</span>
+                    <span>₱{total.toFixed(0)}</span>
                     </div>
                   </div>
 
@@ -380,10 +357,7 @@ const VehicleDetailsPage = () => {
                     Confirm Reservation
                   </button>
 
-                  <div className="summary-note">
-                    <p>* Down payment (10% of total) required to confirm reservation</p>
-                 
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -458,7 +432,7 @@ const VehicleDetailsPage = () => {
                   </div>
                   <div className="info-row">
                     <span className="label">Daily Rate:</span>
-                    <span className="value">${vehicle.price}</span>
+                    <span className="value">₱{vehicle.price}</span>
                   </div>
                 </div>
               </div>
@@ -485,24 +459,20 @@ const VehicleDetailsPage = () => {
                 <h3>Payment Summary</h3>
                 <div className="section-content">
                   <div className="info-row">
-                    <span className="label">Subtotal ({days} {days === 1 ? 'day' : 'days'} × ${vehicle.price}):</span>
-                    <span className="value">${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="info-row">
-                    <span className="label">Down Payment (10%):</span>
-                    <span className="value">${deposit.toFixed(2)}</span>
+                    <span className="label">Subtotal ({days} {days === 1 ? 'day' : 'days'} × ₱{vehicle.price}):</span>
+                    <span className="value">₱{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="receipt-divider"></div>
                   <div className="info-row total-row">
                     <span className="label">Total Amount:</span>
-                    <span className="value">${total.toFixed(2)}</span>
+                    <span className="value">₱{total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
 
               <div className="receipt-footer">
                 <p className="important-notice">IMPORTANT: Please present this confirmation receipt at our store to complete your reservation.</p>
-                <p className="terms">Terms & Conditions: Valid driver's license required. Down payment due at reservation confirmation. Remaining balance due at vehicle pick-up. Free cancellation within 24 hours.</p>
+                <p className="terms">Terms & Conditions: Valid driver's license required. Payment due at vehicle pick-up. Free cancellation within 24 hours.</p>
                 <p className="thank-you">Thank you for choosing Velocity!</p>
               </div>
             </div>

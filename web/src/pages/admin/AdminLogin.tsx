@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAdminAuth } from '../../contexts/AdminAuthContext';
 import { FaLock, FaUser } from 'react-icons/fa';
 import '../../styles/admin/AdminLogin.css';
 
@@ -9,37 +9,17 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [checkingRole, setCheckingRole] = useState(true);
-  const { login, logout, currentUser, loading } = useAuth();
+  const { adminLogin, adminUser, loading } = useAdminAuth();
   const navigate = useNavigate();
 
-  // Check if already logged in as admin (only after auth finishes loading)
+  // Check if already logged in as admin
   useEffect(() => {
-    const checkRole = async () => {
-      if (loading) return; // Wait for auth to initialize
-      
-      if (!currentUser) {
-        setCheckingRole(false);
-        return;
-      }
-
-      try {
-        const { doc, getDoc } = await import('firebase/firestore');
-        const { db } = await import('../../config/firebase');
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        const userData = userDoc.data();
-        if (userData?.role === 'admin') {
-          navigate('/admin/dashboard', { replace: true });
-          return;
-        }
-      } catch (error) {
-        console.error('Error checking role:', error);
-      }
-      setCheckingRole(false);
-    };
-
-    checkRole();
-  }, [currentUser, loading, navigate]);
+    if (loading) return; // Wait for auth to initialize
+    
+    if (adminUser) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [adminUser, loading, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -56,20 +36,17 @@ const AdminLogin = () => {
       setSubmitting(true);
       
       console.log('Attempting admin login with email:', email);
-      const role = await login(email, password);
-      console.log('Login returned role:', role);
+      const isAdmin = await adminLogin(email, password);
+      console.log('Login returned isAdmin:', isAdmin);
       
-      // Check if user (non-admin) is trying to login through admin page
-      if (role !== 'admin') {
-        console.log('Role is not admin, logging out. Role received:', role);
-        await logout();
-        setError('Access denied. Admin credentials required. Your account role: ' + (role || 'unknown'));
+      if (!isAdmin) {
+        console.log('Not an admin account');
+        setError('Access denied. Admin credentials required.');
         setSubmitting(false);
         return;
       }
       
       console.log('Admin login successful, navigating to dashboard');
-      // Admin user - navigate to dashboard
       navigate('/admin/dashboard', { replace: true });
     } catch (err: any) {
       console.error('Login error:', err);
@@ -86,8 +63,8 @@ const AdminLogin = () => {
     }
   };
 
-  // Show loading while auth initializes or checking role
-  if (loading || checkingRole) {
+  // Show loading while auth initializes
+  if (loading) {
     return (
       <div style={{ 
         display: 'flex', 

@@ -1,66 +1,51 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check if user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
     // Helper function to check if user is admin
     function isAdmin() {
-      return isAuthenticated() && 
-             request.auth.token.email in [
-               'admin@velocity.com'
-               // Add more admin emails here
-             ];
+      return request.auth != null && 
+             (request.auth.token.email == 'admin@velocity.com' ||
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
     }
     
-    // Vehicles collection
+    // Vehicles collection - anyone can read, only admins can write
     match /vehicles/{vehicleId} {
-      // Anyone can read vehicles (for public rentals page)
       allow read: if true;
-      
-      // Only admins can create, update, or delete vehicles
-      allow create, update, delete: if isAdmin();
+      allow write: if isAdmin();
     }
-    
-    // Bookings collection (for future use)
-    match /bookings/{bookingId} {
-      // Users can read their own bookings
-      allow read: if isAuthenticated() && 
-                     (resource.data.userId == request.auth.uid || isAdmin());
-      
-      // Authenticated users can create bookings
-      allow create: if isAuthenticated() && 
+
+    // Testimonials collection - anyone can read approved ones
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if isAdmin();
+    }
+
+    // Rentals collection
+    match /rentals/{rentalId} {
+      // Allow anyone to read rentals (needed for checking vehicle availability on home screen)
+      allow read: if true;
+      allow create: if request.auth != null &&
                        request.resource.data.userId == request.auth.uid;
-      
-      // Users can update their own bookings or admins can update any
-      allow update: if isAuthenticated() && 
-                       (resource.data.userId == request.auth.uid || isAdmin());
-      
-      // Only admins can delete bookings
+      allow update: if request.auth != null &&
+        (resource.data.userId == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
     }
-    
-    // Users collection (for future use)
+
+    // Contacts collection
+    match /contacts/{contactId} {
+      // Anyone can create contact messages (for contact form)
+      allow create: if true;
+      // Only admins can read and delete contact messages
+      allow read, delete: if isAdmin();
+    }
+
+    // Users collection
     match /users/{userId} {
-      // Users can read their own data, admins can read all
-      allow read: if isAuthenticated() && 
-                     (userId == request.auth.uid || isAdmin());
-      
-      // Users can create their own profile
-      allow create: if isAuthenticated() && 
-                       userId == request.auth.uid;
-      
-      // Users can update their own profile, admins can update any
-      allow update: if isAuthenticated() && 
-                       (userId == request.auth.uid || isAdmin());
-      
-      // Only admins can delete users
-      allow delete: if isAdmin();
+      allow read, write: if request.auth != null &&
+        (userId == request.auth.uid || isAdmin());
     }
-    
+
     // Deny all other access by default
     match /{document=**} {
       allow read, write: if false;

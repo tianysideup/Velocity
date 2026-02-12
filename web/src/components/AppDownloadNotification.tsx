@@ -7,25 +7,19 @@ const AppDownloadNotification = () => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
-    // Check if user has already dismissed the notification
-    const isDismissed = localStorage.getItem('appNotificationDismissed');
-    
-    if (!isDismissed) {
-      // Show notification after 10 seconds
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-        setTimeout(() => setIsAnimating(true), 100);
-      }, 10000);
+    // Always show notification after 10 seconds, regardless of previous dismissal
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+      setTimeout(() => setIsAnimating(true), 100);
+    }, 10000);
 
-      return () => clearTimeout(timer);
-    }
+    return () => clearTimeout(timer);
   }, []);
 
   const handleDismiss = () => {
     setIsAnimating(false);
     setTimeout(() => {
       setIsVisible(false);
-      localStorage.setItem('appNotificationDismissed', 'true');
     }, 300);
   };
 
@@ -53,24 +47,7 @@ const AppDownloadNotification = () => {
           <p>Access Velocity on the go! Download our app for a seamless rental experience.</p>
         </div>
         
-        <div className="notification-actions">
-          <button 
-            className="download-btn ios-btn" 
-            onClick={() => handleDownload('iOS')}
-            aria-label="Download on App Store"
-          >
-            <FaApple />
-            <span>App Store</span>
-          </button>
-          <button 
-            className="download-btn android-btn" 
-            onClick={() => handleDownload('Android')}
-            aria-label="Download on Google Play"
-          >
-            <FaGooglePlay />
-            <span>Google Play</span>
-          </button>
-        </div>
+   
       </div>
     </div>
   );

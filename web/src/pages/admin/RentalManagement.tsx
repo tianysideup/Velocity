@@ -337,10 +337,6 @@ const RentalManagement = () => {
                     <span className="detail-label">Subtotal:</span>
                     <span className="detail-value">₱{selectedRental.subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Deposit (10%):</span>
-                    <span className="detail-value">₱{selectedRental.deposit.toFixed(2)}</span>
-                  </div>
                   <div className="detail-row total-row">
                     <span className="detail-label">Total Amount:</span>
                     <span className="detail-value">₱{selectedRental.totalAmount.toFixed(2)}</span>

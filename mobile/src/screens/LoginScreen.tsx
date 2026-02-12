@@ -9,8 +9,10 @@ import {
   Platform,
   ScrollView,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
@@ -25,6 +27,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
 
   const handleLogin = async () => {
@@ -53,10 +56,13 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.card}>
+        <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.logoText}>VELOCITY</Text>
-            <Text style={styles.title}>Welcome Back</Text>
+            <Image
+              source={require('../../assets/Logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.subtitle}>Login to your account to continue</Text>
           </View>
 
@@ -81,15 +87,27 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor="rgba(26, 26, 26, 0.4)"
-                value={password}
-                onChangeText={(text) => { setPassword(text); setError(''); }}
-                secureTextEntry
-                autoCapitalize="none"
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Enter your password"
+                  placeholderTextColor="rgba(26, 26, 26, 0.4)"
+                  value={password}
+                  onChangeText={(text) => { setPassword(text); setError(''); }}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                />
+                <TouchableOpacity
+                  style={styles.eyeIcon}
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  <Ionicons
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    size={20}
+                    color="rgba(26, 26, 26, 0.6)"
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <TouchableOpacity
@@ -135,28 +153,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 32,
   },
-  card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
-    padding: 48,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 5,
+  content: {
+    width: '100%',
   },
   header: {
     alignItems: 'center',
     marginBottom: 32,
   },
-  logoText: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#000000',
-    letterSpacing: 2,
-    marginBottom: 24,
+  logo: {
+    width: 180,
+    height: 180,
+    marginBottom: -30,
   },
   title: {
     fontSize: 32,
@@ -200,6 +207,25 @@ const styles = StyleSheet.create({
     padding: 14,
     fontSize: 16,
     color: '#1a1a1a',
+  },
+  passwordContainer: {
+    position: 'relative',
+  },
+  passwordInput: {
+    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 10,
+    padding: 14,
+    paddingRight: 45,
+    fontSize: 16,
+    color: '#1a1a1a',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 14,
+    top: 14,
+    padding: 4,
   },
   button: {
     marginTop: 8,

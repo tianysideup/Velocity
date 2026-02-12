@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { AdminAuthProvider } from './contexts/AdminAuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import UserProtectedRoute from './components/UserProtectedRoute'
 import Navbar from './components/Navbar'
@@ -7,6 +8,7 @@ import Footer from './components/Footer'
 import HomePage from './pages/HomePage'
 import RentalsPage from './pages/RentalsPage'
 import VehicleDetailsPage from './pages/VehicleDetailsPage'
+import NotificationsPage from './pages/NotificationsPage'
 import RegisterPage from './pages/RegisterPage'
 import LoginPage from './pages/LoginPage'
 import AdminLogin from './pages/admin/AdminLogin'
@@ -15,6 +17,7 @@ import VehicleManagement from './pages/admin/VehicleManagement'
 import RentalManagement from './pages/admin/RentalManagement'
 import TestimonialManagement from './pages/admin/TestimonialManagement'
 import ContactManagement from './pages/admin/ContactManagement'
+import TestPage from './pages/TestPage'
 import './App.css'
 
 function AppContent() {
@@ -36,6 +39,13 @@ function AppContent() {
         {/* Public Routes - Anyone can view */}
         <Route path="/rentals" element={<RentalsPage />} />
         <Route path="/vehicle/:id" element={<VehicleDetailsPage />} />
+        <Route path="/test" element={<TestPage />} />
+        
+        {/* User Protected Routes */}
+        <Route 
+          path="/notifications" 
+          element={<UserProtectedRoute><NotificationsPage /></UserProtectedRoute>} 
+        />
         
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -70,7 +80,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppContent />
+        <AdminAuthProvider>
+          <AppContent />
+        </AdminAuthProvider>
       </AuthProvider>
     </Router>
   );

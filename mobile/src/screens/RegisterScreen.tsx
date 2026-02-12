@@ -8,28 +8,36 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
 import { LinearGradient } from 'expo-linear-gradient';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 type RegisterScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Register'>;
 };
 
 const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { signup } = useAuth();
 
   const handleRegister = async () => {
-    if (!email || !password || !confirmPassword) {
+    if (!name || !phone || !email || !password || !confirmPassword) {
       setError('Please fill in all fields');
       return;
     }
@@ -47,7 +55,18 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
     try {
       setLoading(true);
       setError('');
-      await signup(email, password);
+      const userCredential = await signup(email, password);
+      
+      // Create user profile in Firestore
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        name,
+        email,
+        phone,
+        role: 'user',
+        createdAt: new Date().toISOString(),
+        approved: true
+      });
+      
       setSuccess('Account created successfully!');
     } catch (error: any) {
       setError('Could not create account');
@@ -65,10 +84,13 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.card}>
+        <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.logoText}>VELOCITY</Text>
-            <Text style={styles.title}>Create Account</Text>
+            <Image
+              source={require('../../assets/Logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.subtitle}>Sign up to get started</Text>
           </View>
 
@@ -81,6 +103,38 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           </View> : null}
 
           <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Full Name</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your full name"
+                placeholderTextColor="rgba(26, 26, 26, 0.4)"
+                value={name}
+                onChangeText={(text) => { setName(text); setError(''); }}
+                autoCapitalize="words"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Phone Number</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="09123456789"
+                placeholderTextColor="rgba(26, 26, 26, 0.4)"
+                value={phone}
+                onChangeText={(text) => {
+                  const digitsOnly = text.replace(/[^0-9]/g, '');
+                  if (digitsOnly.length <= 11) {
+                    setPhone(digitsOnly);
+                    setError('');
+                  }
+                }}
+                keyboardType="phone-pad"
+                maxLength={11}
+              />
+              <Text style={styles.helperText}>{phone.length}/11 digits</Text>
+            </View>
+
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email Address</Text>
               <TextInput
@@ -97,28 +151,52 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Create a password"
-                placeholderTextColor="rgba(26, 26, 26, 0.4)"
-                value={password}
-                onChangeText={(text) => { setPassword(text); setError(''); }}
-                secureTextEntry
-                autoCapitalize="none"
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Create a password"
+                  placeholderTextColor="rgba(26, 26, 26, 0.4)"
+                  value={password}
+                  onChangeText={(text) => { setPassword(text); setError(''); }}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                />
+                <TouchableOpacity
+                  style={styles.eyeIcon}
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  <Ionicons
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    size={20}
+                    color="rgba(26, 26, 26, 0.6)"
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Confirm Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm your password"
-                placeholderTextColor="rgba(26, 26, 26, 0.4)"
-                value={confirmPassword}
-                onChangeText={(text) => { setConfirmPassword(text); setError(''); }}
-                secureTextEntry
-                autoCapitalize="none"
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Confirm your password"
+                  placeholderTextColor="rgba(26, 26, 26, 0.4)"
+                  value={confirmPassword}
+                  onChangeText={(text) => { setConfirmPassword(text); setError(''); }}
+                  secureTextEntry={!showConfirmPassword}
+                  autoCapitalize="none"
+                />
+                <TouchableOpacity
+                  style={styles.eyeIcon}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  <Ionicons
+                    name={showConfirmPassword ? 'eye-off' : 'eye'}
+                    size={20}
+                    color="rgba(26, 26, 26, 0.6)"
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <TouchableOpacity
@@ -164,28 +242,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 32,
   },
-  card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
-    padding: 48,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 5,
+  content: {
+    width: '100%',
   },
   header: {
     alignItems: 'center',
     marginBottom: 32,
   },
-  logoText: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#000000',
-    letterSpacing: 2,
-    marginBottom: 24,
+  logo: {
+    width: 180,
+    height: 180,
+    marginBottom: -30,
   },
   title: {
     fontSize: 32,
@@ -243,6 +310,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1a1a1a',
   },
+  passwordContainer: {
+    position: 'relative',
+  },
+  passwordInput: {
+    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 10,
+    padding: 14,
+    paddingRight: 45,
+    fontSize: 16,
+    color: '#1a1a1a',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 14,
+    top: 14,
+    padding: 4,
+  },
   button: {
     marginTop: 8,
     borderRadius: 10,
@@ -279,6 +365,12 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 14,
     fontWeight: '600',
+  },
+  helperText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+    marginLeft: 4,
   },
 });
 

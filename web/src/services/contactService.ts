@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, doc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export interface ContactMessage {
@@ -12,10 +12,17 @@ export interface ContactMessage {
 
 // Submit a new contact message
 export const submitContactMessage = async (message: Omit<ContactMessage, 'id' | 'createdAt'>): Promise<void> => {
-  await addDoc(collection(db, 'contacts'), {
-    ...message,
-    createdAt: new Date().toISOString()
-  });
+  try {
+    console.log('Submitting contact message:', message);
+    await addDoc(collection(db, 'contacts'), {
+      ...message,
+      createdAt: new Date().toISOString()
+    });
+    console.log('Contact message submitted successfully');
+  } catch (error) {
+    console.error('Error submitting contact message:', error);
+    throw error;
+  }
 };
 
 // Get all contact messages (admin only)
@@ -50,5 +57,70 @@ export const getAllContactMessages = async (): Promise<ContactMessage[]> => {
 
 // Delete a contact message
 export const deleteContactMessage = async (messageId: string): Promise<void> => {
-  await deleteDoc(doc(db, 'contacts', messageId));
+  if (!messageId) {
+    throw new Error('Message ID is required');
+  }
+  
+  console.log('Deleting contact message:', messageId);
+  
+  try {
+    await deleteDoc(doc(db, 'contacts', messageId));
+    console.log('Contact message deleted successfully');
+  } catch (error) {
+    console.error('Error deleting contact message:', error);
+    throw error;
+  }
+};
+
+// Real-time listener for contact messages (admin only)
+export const subscribeToContactMessages = (callback: (messages: ContactMessage[]) => void): (() => void) => {
+  try {
+    const q = query(
+      collection(db, 'contacts'),
+      orderBy('createdAt', 'desc')
+    );
+    
+    return onSnapshot(q,
+      (querySnapshot) => {
+        const messages = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as ContactMessage));
+        callback(messages);
+      },
+      (error) => {
+        console.warn('Failed to listen with orderBy, trying without ordering:', error);
+        return onSnapshot(collection(db, 'contacts'), (querySnapshot) => {
+          const messages = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          } as ContactMessage));
+          
+          const sorted = messages.sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return dateB - dateA;
+          });
+          
+          callback(sorted);
+        });
+      }
+    );
+  } catch (error) {
+    console.error('Error setting up contact listener:', error);
+    return onSnapshot(collection(db, 'contacts'), (querySnapshot) => {
+      const messages = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as ContactMessage));
+      
+      const sorted = messages.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
+      });
+      
+      callback(sorted);
+    });
+  }
 };

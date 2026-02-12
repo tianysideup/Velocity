@@ -21,22 +21,36 @@ const Contact = () => {
     setSuccess('');
 
     try {
+      console.log('Submitting contact form:', formData);
       await submitContactMessage(formData);
       setSuccess('Thank you for your message! We will get back to you soon.');
       setFormData({ name: '', email: '', phone: '', message: '' });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error submitting message:', err);
-      setError('Failed to send message. Please try again.');
+      setError(`Failed to send message: ${err.message || 'Please try again.'}`);
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    // Phone number validation: only digits, max 11
+    if (name === 'phone') {
+      const digitsOnly = value.replace(/\D/g, '');
+      if (digitsOnly.length <= 11) {
+        setFormData({
+          ...formData,
+          [name]: digitsOnly,
+        });
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   return (
@@ -80,8 +94,8 @@ const Contact = () => {
                 </div>
                 <div className="info-card-content">
                   <h4>Visit Us</h4>
-                  <p>123 Business District</p>
-                  <span className="info-label">Your City, ST 12345</span>
+                  <p>Olongapo City</p>
+               
                 </div>
               </div>
 
@@ -126,10 +140,14 @@ const Contact = () => {
                       type="tel"
                       id="phone"
                       name="phone"
-                      placeholder="(555) 123-4567"
+                      placeholder="09123456789"
                       value={formData.phone}
                       onChange={handleChange}
+                      maxLength={11}
+                      pattern="[0-9]{11}"
+                      title="Please enter exactly 11 digits"
                     />
+                    <small style={{fontSize: '0.8rem', color: '#666'}}>{formData.phone.length}/11 digits</small>
                   </div>
                 </div>
 

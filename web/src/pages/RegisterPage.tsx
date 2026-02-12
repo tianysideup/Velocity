@@ -96,10 +96,19 @@ const RegisterPage = () => {
                 type="tel"
                 id="phone"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  const digitsOnly = e.target.value.replace(/\D/g, '');
+                  if (digitsOnly.length <= 11) {
+                    setPhone(digitsOnly);
+                  }
+                }}
                 required
-                placeholder="Enter your phone number"
+                placeholder="09123456789"
+                maxLength={11}
+                pattern="[0-9]{11}"
+                title="Please enter exactly 11 digits"
               />
+              <small style={{fontSize: '0.8rem', color: '#666', marginTop: '0.25rem', display: 'block'}}>{phone.length}/11 digits</small>
             </div>
 
             <div className="form-group">

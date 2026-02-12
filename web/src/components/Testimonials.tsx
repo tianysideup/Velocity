@@ -15,6 +15,7 @@ const Testimonials = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const { currentUser } = useAuth();
 
@@ -87,13 +88,15 @@ const Testimonials = () => {
       });
 
       setSuccess('Thank you! Your testimonial has been submitted for review.');
+      setShowSuccessAnimation(true);
       setContent('');
       setRating(5);
       setTimeout(() => {
         setShowModal(false);
         setSuccess('');
+        setShowSuccessAnimation(false);
         loadTestimonials(); // Refresh the list
-      }, 2000);
+      }, 2500);
     } catch (error) {
       setError('Failed to submit testimonial. Please try again.');
     } finally {
@@ -191,7 +194,19 @@ const Testimonials = () => {
             </div>
 
             {error && <div className="error-message">{error}</div>}
-            {success && <div className="success-message">{success}</div>}
+            {success && (
+              <div className="success-message">
+                {showSuccessAnimation && (
+                  <div className="success-checkmark">
+                    <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                      <circle className="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                      <path className="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+                  </div>
+                )}
+                {success}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="testimonial-form">
               <div className="form-group">

@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { 
-  getAllVehicles, 
+  getAllVehiclesForAdmin, 
   addVehicle, 
   updateVehicle, 
   deleteVehicle, 
@@ -11,7 +11,9 @@ import {
   FaEdit, 
   FaTrash, 
   FaTimes,
-  FaImage
+  FaImage,
+  FaToggleOn,
+  FaToggleOff
 } from 'react-icons/fa';
 import AdminLayout from '../../components/AdminLayout';
 import '../../styles/admin/VehicleManagement.css';
@@ -43,7 +45,7 @@ const VehicleManagement = () => {
 
   const loadVehicles = async () => {
     try {
-      const data = await getAllVehicles();
+      const data = await getAllVehiclesForAdmin();
       setVehicles(data);
     } catch (error) {
       console.error('Error loading vehicles:', error);
@@ -166,6 +168,17 @@ const VehicleManagement = () => {
     setVehicleToDelete(null);
   };
 
+  const toggleAvailability = async (vehicle: Vehicle) => {
+    if (!vehicle.id) return;
+    try {
+      await updateVehicle(vehicle.id, { available: !vehicle.available });
+      await loadVehicles();
+    } catch (error) {
+      console.error('Error toggling availability:', error);
+      alert('Failed to update availability. Please try again.');
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="management-header">
@@ -187,15 +200,22 @@ const VehicleManagement = () => {
                   <div className="vehicle-details">
                     <span className="type-badge">{vehicle.type}</span>
                     <span className="price">₱{vehicle.price}/day</span>
-                    <span className="rating">{vehicle.rating} ⭐</span>
                   </div>
                   <p className="description">{vehicle.description}</p>
                   <div className="status">
                     <span className={`status-badge ${vehicle.available ? 'available' : 'rented'}`}>
-                      {vehicle.available ? 'Available' : 'Rented'}
+                      {vehicle.available ? 'Available' : 'Unavailable'}
                     </span>
                   </div>
                   <div className="vehicle-actions">
+                    <button 
+                      onClick={() => toggleAvailability(vehicle)} 
+                      className={`availability-toggle-btn ${vehicle.available ? 'available' : 'unavailable'}`}
+                      title={vehicle.available ? 'Set to Unavailable' : 'Set to Available'}
+                    >
+                      {vehicle.available ? <FaToggleOn /> : <FaToggleOff />}
+                      {vehicle.available ? 'Available' : 'Unavailable'}
+                    </button>
                     <button onClick={() => openModal(vehicle)} className="edit-btn">
                       <FaEdit /> Edit
                     </button>

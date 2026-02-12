@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaCar, FaFilter, FaSearch, FaStar } from 'react-icons/fa';
+import { FaCar, FaFilter, FaSearch } from 'react-icons/fa';
 import { getAllVehicles, type Vehicle } from '../services/vehicleService';
 import { initializeVehicles } from '../utils/initializeVehicles';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,7 +11,6 @@ const RentalsPage = () => {
   const { currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
-  const [priceRange, setPriceRange] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,14 +24,18 @@ const RentalsPage = () => {
   const loadVehicles = async () => {
     try {
       setLoading(true);
+      console.log('🔄 Starting to load vehicles...');
       const startTime = Date.now();
       
       const data = await getAllVehicles();
+      console.log('📊 Vehicles loaded:', data.length, data);
       
       // If no vehicles exist, initialize with sample data
       if (data.length === 0) {
+        console.log('🚗 No vehicles found, initializing...');
         await initializeVehicles();
         const newData = await getAllVehicles();
+        console.log('✅ Vehicles after initialization:', newData.length, newData);
         setVehicles(newData);
       } else {
         setVehicles(data);
@@ -45,9 +48,10 @@ const RentalsPage = () => {
       
       setTimeout(() => {
         setLoading(false);
+        console.log('✅ Loading complete');
       }, remainingTime);
     } catch (err) {
-      console.error('Error loading vehicles:', err);
+      console.error('❌ Error loading vehicles:', err);
       setError('Failed to load vehicles. Please try again.');
       setLoading(false);
     }
@@ -56,17 +60,11 @@ const RentalsPage = () => {
   const filteredVehicles = vehicles.filter((vehicle) => {
     const matchesSearch = vehicle.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === 'all' || vehicle.type === selectedType;
-    
-    let matchesPrice = true;
-    if (priceRange === 'low') matchesPrice = vehicle.price < 100;
-    if (priceRange === 'mid') matchesPrice = vehicle.price >= 100 && vehicle.price < 200;
-    if (priceRange === 'high') matchesPrice = vehicle.price >= 200;
 
-    return matchesSearch && matchesType && matchesPrice;
+    return matchesSearch && matchesType;
   }).sort((a, b) => {
     if (sortBy === 'price-low') return a.price - b.price;
     if (sortBy === 'price-high') return b.price - a.price;
-    if (sortBy === 'rating') return b.rating - a.rating;
     return 0;
   });
 
@@ -110,28 +108,16 @@ const RentalsPage = () => {
           </div>
 
           <div className="filter-group">
-            <label>Price Range</label>
-            <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
-              <option value="all">All Prices</option>
-              <option value="low">Under $100/day</option>
-              <option value="mid">$100 - $200/day</option>
-              <option value="high">$200+/day</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
             <label>Sort By</label>
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="featured">Featured</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
-              <option value="rating">Highest Rated</option>
             </select>
           </div>
 
           <button className="clear-filters" onClick={() => {
             setSelectedType('all');
-            setPriceRange('all');
             setSortBy('featured');
             setSearchTerm('');
           }}>
@@ -173,28 +159,16 @@ const RentalsPage = () => {
               </div>
 
               <div className="filter-group">
-                <label>Price Range</label>
-                <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
-                  <option value="all">All Prices</option>
-                  <option value="low">Under $100/day</option>
-                  <option value="mid">$100 - $200/day</option>
-                  <option value="high">$200+/day</option>
-                </select>
-              </div>
-
-              <div className="filter-group">
                 <label>Sort By</label>
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                   <option value="featured">Featured</option>
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Highest Rated</option>
                 </select>
               </div>
 
               <button className="clear-filters" onClick={() => {
                 setSelectedType('all');
-                setPriceRange('all');
                 setSortBy('featured');
                 setSearchTerm('');
               }}>
@@ -214,16 +188,13 @@ const RentalsPage = () => {
                   <img src={vehicle.image} alt={vehicle.name} />
                   <div className="vehicle-type">{vehicle.type.toUpperCase()}</div>
                   {!vehicle.available && <div className="unavailable-badge">Currently Unavailable</div>}
-                  <div className="rating-badge">
-                    <FaStar /> {vehicle.rating}
-                  </div>
                 </div>
                 <div className="vehicle-info">
                   <h3>{vehicle.name}</h3>
                   <p className="vehicle-description">{vehicle.description}</p>
                   <div className="vehicle-footer">
                     <div className="price">
-                      <span className="amount">${vehicle.price}</span>
+                      <span className="amount">₱{vehicle.price}</span>
                       <span className="period">/day</span>
                     </div>
                     <button 

@@ -35,10 +35,10 @@ const Footer = () => {
           <div className="footer-section">
             <h4>Contact</h4>
             <ul>
-              <li>(555) 123-4567</li>
-              <li>info@velocity.com</li>
-              <li>123 Business District</li>
-              <li>Your City, ST 12345</li>
+              <li>091826565131</li>
+              <li>velocity@gmail.com</li>
+              <li>Olongapo City</li>
+           
             </ul>
           </div>
         </div>

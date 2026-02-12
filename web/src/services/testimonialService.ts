@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export interface Testimonial {
@@ -50,29 +50,67 @@ export const getApprovedTestimonials = async (): Promise<Testimonial[]> => {
 
 // Get all testimonials (for admin)
 export const getAllTestimonials = async (): Promise<Testimonial[]> => {
-  const q = query(
-    collection(db, 'testimonials'),
-    orderBy('createdAt', 'desc')
-  );
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  } as Testimonial));
+  try {
+    const q = query(
+      collection(db, 'testimonials'),
+      orderBy('createdAt', 'desc')
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Testimonial));
+  } catch (error) {
+    // If orderBy fails (missing index or field), try without ordering
+    console.warn('Failed to query with orderBy, trying without ordering:', error);
+    const querySnapshot = await getDocs(collection(db, 'testimonials'));
+    const testimonials = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Testimonial));
+    
+    // Sort in memory by createdAt
+    return testimonials.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+  }
 };
 
 // Get user's testimonials
 export const getUserTestimonials = async (userId: string): Promise<Testimonial[]> => {
-  const q = query(
-    collection(db, 'testimonials'),
-    where('userId', '==', userId),
-    orderBy('createdAt', 'desc')
-  );
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  } as Testimonial));
+  try {
+    const q = query(
+      collection(db, 'testimonials'),
+      where('userId', '==', userId),
+      orderBy('createdAt', 'desc')
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Testimonial));
+  } catch (error) {
+    // If orderBy fails (missing index), try without ordering
+    console.warn('Failed to query with orderBy, trying without ordering:', error);
+    const q = query(
+      collection(db, 'testimonials'),
+      where('userId', '==', userId)
+    );
+    const querySnapshot = await getDocs(q);
+    const testimonials = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Testimonial));
+    
+    // Sort in memory by createdAt
+    return testimonials.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+  }
 };
 
 // Submit a new testimonial
@@ -85,17 +123,99 @@ export const updateTestimonialStatus = async (
   testimonialId: string, 
   status: 'approved' | 'rejected'
 ): Promise<void> => {
-  const testimonialRef = doc(db, 'testimonials', testimonialId);
-  const updateData: any = { status };
-  
-  if (status === 'approved') {
-    updateData.approvedAt = new Date().toISOString();
+  if (!testimonialId) {
+    throw new Error('Testimonial ID is required');
   }
   
-  await updateDoc(testimonialRef, updateData);
+  console.log('Updating testimonial status:', testimonialId, 'to', status);
+  
+  try {
+    const testimonialRef = doc(db, 'testimonials', testimonialId);
+    const updateData: any = { status };
+    
+    if (status === 'approved') {
+      updateData.approvedAt = new Date().toISOString();
+    }
+    
+    await updateDoc(testimonialRef, updateData);
+    console.log('Testimonial status updated successfully');
+  } catch (error) {
+    console.error('Error updating testimonial status:', error);
+    throw error;
+  }
 };
 
 // Delete testimonial (admin only)
 export const deleteTestimonial = async (testimonialId: string): Promise<void> => {
-  await deleteDoc(doc(db, 'testimonials', testimonialId));
+  if (!testimonialId) {
+    throw new Error('Testimonial ID is required');
+  }
+  
+  console.log('Deleting testimonial:', testimonialId);
+  
+  try {
+    await deleteDoc(doc(db, 'testimonials', testimonialId));
+    console.log('Testimonial deleted successfully');
+  } catch (error) {
+    console.error('Error deleting testimonial:', error);
+    throw error;
+  }
+};
+
+// Real-time listener for all testimonials (admin only)
+export const subscribeToTestimonials = (callback: (testimonials: Testimonial[]) => void): (() => void) => {
+  try {
+    // Try with orderBy first
+    const q = query(
+      collection(db, 'testimonials'),
+      orderBy('createdAt', 'desc')
+    );
+    
+    return onSnapshot(q, 
+      (querySnapshot) => {
+        const testimonials = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Testimonial));
+        callback(testimonials);
+      },
+      (error) => {
+        console.warn('Failed to listen with orderBy, trying without ordering:', error);
+        // If orderBy fails, set up listener without ordering
+        const simpleQuery = collection(db, 'testimonials');
+        return onSnapshot(simpleQuery, (querySnapshot) => {
+          const testimonials = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          } as Testimonial));
+          
+          // Sort in memory by createdAt
+          const sorted = testimonials.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA;
+          });
+          
+          callback(sorted);
+        });
+      }
+    );
+  } catch (error) {
+    console.error('Error setting up testimonial listener:', error);
+    // Fallback to simple listener
+    return onSnapshot(collection(db, 'testimonials'), (querySnapshot) => {
+      const testimonials = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Testimonial));
+      
+      const sorted = testimonials.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+      
+      callback(sorted);
+    });
+  }
 };

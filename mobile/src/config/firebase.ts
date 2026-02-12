@@ -1,6 +1,6 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, initializeAuth, getReactNativePersistence, Auth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, CACHE_SIZE_UNLIMITED, Firestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -33,8 +33,19 @@ try {
   auth = getAuth(app);
 }
 
-export { auth };
-export const db = getFirestore(app);
+// Initialize Firestore with optimized settings for React Native
+let db: Firestore;
+try {
+  db = initializeFirestore(app, {
+    experimentalForceLongPolling: true, // Better for React Native
+    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+  });
+} catch (error) {
+  // If Firestore is already initialized, get the existing instance
+  db = getFirestore(app);
+}
+
+export { auth, db };
 export const storage = getStorage(app);
 
 export default app;

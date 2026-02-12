@@ -99,6 +99,46 @@
 .vehicle-actions {
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.availability-toggle-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+}
+
+.availability-toggle-btn svg {
+  font-size: 1.2rem;
+}
+
+.availability-toggle-btn.available {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 2px solid #4caf50;
+}
+
+.availability-toggle-btn.available:hover {
+  background: #c8e6c9;
+}
+
+.availability-toggle-btn.unavailable {
+  background: #fff3e0;
+  color: #e65100;
+  border: 2px solid #ff9800;
+}
+
+.availability-toggle-btn.unavailable:hover {
+  background: #ffe0b2;
 }
 
 .edit-btn, .delete-btn {

@@ -1,0 +1,776 @@
+.notifications-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-top: 120px;
+}
+
+.notifications-header {
+  background: linear-gradient(135deg, #000 0%, #333 100%);
+  color: white;
+  padding: 40px 20px;
+}
+
+.notifications-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.notifications-header-icon {
+  font-size: 48px;
+}
+
+.notifications-header h1 {
+  font-size: 32px;
+  margin: 0 0 8px 0;
+}
+
+.notifications-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 16px;
+}
+
+.notifications-content {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px 40px;
+}
+
+.rental-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 24px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #000;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+  font-size: 80px;
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+.empty-state h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.browse-btn {
+  background: #000;
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.browse-btn:hover {
+  background: #333;
+}
+
+.browse-btn:active {
+  transform: scale(0.98);
+}
+
+.rentals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.rental-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.rental-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.rental-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 12px 16px;
+  background: white;
+}
+
+.rental-status {
+  padding: 8px 14px;
+  border-radius: 25px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.rental-date {
+  font-size: 13px;
+  color: #999;
+  font-weight: 500;
+}
+
+.rental-card-body {
+  padding: 0 16px 16px 16px;
+}
+
+.rental-vehicle-info {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.rental-vehicle-image {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.rental-vehicle-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rental-vehicle-info h3 {
+  font-size: 18px;
+  margin: 0;
+  color: #000;
+  font-weight: 600;
+}
+
+.rental-type {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.rental-confirmation {
+  font-size: 12px;
+  color: #999;
+  font-family: monospace;
+  margin: 0;
+}
+
+.rental-card-info {
+  padding: 12px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rental-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+}
+
+.rental-detail-item svg {
+  font-size: 13px;
+  flex-shrink: 0;
+  color: #999;
+}
+
+.rental-detail-item span {
+  line-height: 1.4;
+}
+
+.rental-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #000;
+}
+
+.rental-card-footer {
+  padding: 0 16px 16px 16px;
+  margin-top: auto;
+}
+
+.view-receipt-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  background: #000;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.view-receipt-btn:hover {
+  background: #333;
+}
+
+.view-receipt-btn:active {
+  transform: scale(0.98);
+}
+
+/* Receipt Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.receipt-modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  -webkit-overflow-scrolling: touch;
+}
+
+.receipt-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #eee;
+}
+
+.receipt-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #000;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  color: #666;
+  transition: color 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.close-modal-btn:hover {
+  color: #000;
+}
+
+.close-modal-btn:active {
+  transform: scale(0.9);
+}
+
+.receipt-modal-body {
+  padding: 24px;
+}
+
+.receipt-status-banner {
+  text-align: center;
+  padding: 16px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.receipt-confirmation {
+  text-align: center;
+  padding: 20px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.receipt-label {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.receipt-confirmation h3 {
+  font-size: 20px;
+  margin: 0;
+  font-family: monospace;
+  color: #000;
+}
+
+.receipt-section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #eee;
+}
+
+.receipt-section:last-of-type {
+  border-bottom: none;
+}
+
+.receipt-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  margin: 0 0 16px 0;
+  color: #000;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.receipt-row span:first-child {
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.receipt-row span:last-child {
+  color: #000;
+  font-weight: 500;
+  text-align: right;
+}
+
+.receipt-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  margin-top: 12px;
+  border-top: 2px solid #000;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.receipt-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
+
+.receipt-footer p {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+}
+
+@media (max-width: 1200px) {
+  .rentals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .notifications-page {
+    padding-top: 100px;
+  }
+
+  .notifications-content {
+    margin: 20px auto;
+    padding: 0 16px 40px;
+  }
+
+  .section-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .rental-section {
+    margin-bottom: 32px;
+  }
+
+  .rentals-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .rental-card {
+    border-radius: 12px;
+  }
+
+  .rental-card-header {
+    padding: 12px 12px 10px 12px;
+  }
+
+  .rental-status {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+
+  .rental-date {
+    font-size: 12px;
+  }
+
+  .rental-card-body {
+    padding: 0 12px 12px 12px;
+  }
+
+  .rental-vehicle-info {
+    gap: 10px;
+  }
+
+  .rental-vehicle-image {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+  }
+
+  .rental-vehicle-info h3 {
+    font-size: 16px;
+  }
+
+  .rental-type {
+    font-size: 13px;
+  }
+
+  .rental-confirmation {
+    font-size: 11px;
+  }
+
+  .rental-card-info {
+    padding: 10px 12px 12px 12px;
+    gap: 10px;
+  }
+
+  .rental-detail-item {
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .rental-detail-item svg {
+    font-size: 12px;
+  }
+
+  .rental-amount {
+    font-size: 24px;
+  }
+
+  .rental-card-footer {
+    padding: 0 12px 12px 12px;
+  }
+
+  .view-receipt-btn {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .receipt-modal {
+    max-height: 85vh;
+    border-radius: 12px;
+  }
+
+  .receipt-modal-header {
+    padding: 20px 16px;
+  }
+
+  .receipt-modal-header h2 {
+    font-size: 20px;
+  }
+
+  .receipt-modal-body {
+    padding: 20px 16px;
+  }
+
+  .empty-state {
+    padding: 60px 20px;
+    border-radius: 12px;
+  }
+
+  .empty-icon {
+    font-size: 60px;
+  }
+
+  .empty-state h2 {
+    font-size: 20px;
+  }
+
+  .browse-btn {
+    padding: 10px 24px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notifications-page {
+    padding-top: 85px;
+  }
+
+  .notifications-content {
+    margin: 16px auto;
+    padding: 0 12px 32px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+  }
+
+  .rental-section {
+    margin-bottom: 24px;
+  }
+
+  .rentals-grid {
+    gap: 12px;
+  }
+
+  .rental-card {
+    border-radius: 10px;
+  }
+
+  .rental-card-header {
+    padding: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .rental-status {
+    padding: 5px 10px;
+    font-size: 9px;
+  }
+
+  .rental-date {
+    font-size: 11px;
+  }
+
+  .rental-card-body {
+    padding: 0 10px 10px 10px;
+  }
+
+  .rental-vehicle-info {
+    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .rental-vehicle-image {
+    width: 100%;
+    max-width: 200px;
+    height: 140px;
+    border-radius: 8px;
+  }
+
+  .rental-vehicle-details {
+    width: 100%;
+    align-items: center;
+  }
+
+  .rental-vehicle-info h3 {
+    font-size: 15px;
+  }
+
+  .rental-type {
+    font-size: 12px;
+  }
+
+  .rental-confirmation {
+    font-size: 10px;
+  }
+
+  .rental-card-info {
+    padding: 8px 10px 10px 10px;
+    gap: 8px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .rental-detail-item {
+    font-size: 11px;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .rental-detail-item svg {
+    font-size: 11px;
+  }
+
+  .rental-detail-item span {
+    word-break: break-word;
+  }
+
+  .rental-amount {
+    font-size: 22px;
+  }
+
+  .rental-card-footer {
+    padding: 0 10px 10px 10px;
+  }
+
+  .view-receipt-btn {
+    padding: 11px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  .receipt-modal {
+    border-radius: 10px;
+    max-height: 90vh;
+  }
+
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+
+  .receipt-modal-header {
+    padding: 16px 12px;
+  }
+
+  .receipt-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .close-modal-btn {
+    font-size: 20px;
+  }
+
+  .receipt-modal-body {
+    padding: 16px 12px;
+  }
+
+  .receipt-status-banner {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .receipt-confirmation {
+    padding: 16px;
+  }
+
+  .receipt-confirmation h3 {
+    font-size: 16px;
+  }
+
+  .receipt-section {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+  }
+
+  .receipt-section h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .receipt-row {
+    font-size: 13px;
+    padding: 6px 0;
+  }
+
+  .receipt-total {
+    font-size: 16px;
+    padding: 12px 0;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+  }
+
+  .empty-icon {
+    font-size: 50px;
+  }
+
+  .empty-state h2 {
+    font-size: 18px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+  }
+
+  .browse-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .loading-state {
+    padding: 40px 16px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+  }
+
+  .loading-state p {
+    font-size: 14px;
+  }
+}

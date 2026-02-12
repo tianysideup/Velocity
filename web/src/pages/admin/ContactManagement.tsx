@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllContactMessages, deleteContactMessage, type ContactMessage } from '../../services/contactService';
+import { subscribeToContactMessages, deleteContactMessage, type ContactMessage } from '../../services/contactService';
 import { FaEnvelope, FaPhone, FaTrash } from 'react-icons/fa';
 import AdminLayout from '../../components/AdminLayout';
 import '../../styles/admin/ContactManagement.css';
@@ -10,27 +10,22 @@ const ContactManagement = () => {
   const [processing, setProcessing] = useState<string | null>(null);
 
   useEffect(() => {
-    loadMessages();
-
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(() => {
-      loadMessages();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadMessages = async () => {
-    try {
-      setLoading(true);
-      const data = await getAllContactMessages();
+    console.log('Setting up real-time contact messages listener');
+    setLoading(true);
+    
+    // Subscribe to real-time updates
+    const unsubscribe = subscribeToContactMessages((data) => {
+      console.log('Received contact messages update:', data.length, 'messages');
       setMessages(data);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    } finally {
       setLoading(false);
-    }
-  };
+    });
+
+    // Cleanup listener on unmount
+    return () => {
+      console.log('Cleaning up contact messages listener');
+      unsubscribe();
+    };
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!id) return;
@@ -42,7 +37,7 @@ const ContactManagement = () => {
     try {
       setProcessing(id);
       await deleteContactMessage(id);
-      await loadMessages();
+      // No need to reload - real-time listener will update automatically
     } catch (error) {
       console.error('Error deleting message:', error);
       alert('Failed to delete message');
@@ -51,15 +46,12 @@ const ContactManagement = () => {
     }
   };
 
-  const stats = {
-    total: messages.length
-  };
-
   return (
     <AdminLayout>
       <div className="contact-management">
         <div className="management-header">
           <h1>Contact Messages</h1>
+        
         </div>
 
         {loading ? (
