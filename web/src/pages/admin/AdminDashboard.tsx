@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getAllVehicles, type Vehicle } from '../../services/vehicleService';
 import { getAllRentals, type Rental } from '../../services/rentalService';
-import { FaCar, FaChartLine, FaReceipt, FaDollarSign } from 'react-icons/fa';
+import { adminDb } from '../../config/firebase';
+import { FaCar, FaReceipt, FaDollarSign } from 'react-icons/fa';
 import AdminLayout from '../../components/AdminLayout';
 import '../../styles/admin/AdminDashboard.css';
 
@@ -18,7 +19,7 @@ const AdminDashboard = () => {
     try {
       const [vehicleData, rentalData] = await Promise.all([
         getAllVehicles(),
-        getAllRentals()
+        getAllRentals(adminDb)
       ]);
       setVehicles(vehicleData);
       setRentals(rentalData);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaTimes, FaApple, FaGooglePlay } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 import '../styles/AppDownloadNotification.css';
 
 const AppDownloadNotification = () => {
@@ -23,11 +23,11 @@ const AppDownloadNotification = () => {
     }, 300);
   };
 
-  const handleDownload = (platform: string) => {
-    console.log(`Download for ${platform} clicked`);
-    // Add your download logic here
-    handleDismiss();
-  };
+  // const handleDownload = (platform: string) => {
+  //   console.log(`Download for ${platform} clicked`);
+  //   // Add your download logic here
+  //   handleDismiss();
+  // };
 
   if (!isVisible) return null;
 

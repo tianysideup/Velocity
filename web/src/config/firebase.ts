@@ -14,13 +14,22 @@ const firebaseConfig = {
   measurementId: "G-3H2SEPZZWM"
 };
 
-// Initialize Firebase
+// Initialize Firebase - primary app for regular users
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase services
+// Separate Firebase app instance for admin auth
+// Each named app gets its own IndexedDB auth storage,
+// so admin and user sessions never interfere with each other.
+const adminApp = initializeApp(firebaseConfig, 'adminApp');
+
+// User Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const analytics = getAnalytics(app);
+
+// Admin services — completely independent from user auth
+export const adminAuth = getAuth(adminApp);
+export const adminDb = getFirestore(adminApp);
 
 export default app;

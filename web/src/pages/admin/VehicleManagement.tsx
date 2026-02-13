@@ -6,6 +6,7 @@ import {
   deleteVehicle, 
   type Vehicle 
 } from '../../services/vehicleService';
+import { adminDb } from '../../config/firebase';
 import { 
   FaPlus, 
   FaEdit, 
@@ -45,7 +46,7 @@ const VehicleManagement = () => {
 
   const loadVehicles = async () => {
     try {
-      const data = await getAllVehiclesForAdmin();
+      const data = await getAllVehiclesForAdmin(adminDb);
       setVehicles(data);
     } catch (error) {
       console.error('Error loading vehicles:', error);
@@ -126,9 +127,9 @@ const VehicleManagement = () => {
       const vehicleData = { ...formData };
       
       if (editingVehicle && editingVehicle.id) {
-        await updateVehicle(editingVehicle.id, vehicleData);
+        await updateVehicle(editingVehicle.id, vehicleData, adminDb);
       } else {
-        await addVehicle(vehicleData);
+        await addVehicle(vehicleData, adminDb);
       }
       
       await loadVehicles();
@@ -151,7 +152,7 @@ const VehicleManagement = () => {
 
     try {
       setDeleting(true);
-      await deleteVehicle(vehicleToDelete);
+      await deleteVehicle(vehicleToDelete, adminDb);
       await loadVehicles();
       setShowDeleteModal(false);
       setVehicleToDelete(null);
@@ -171,7 +172,7 @@ const VehicleManagement = () => {
   const toggleAvailability = async (vehicle: Vehicle) => {
     if (!vehicle.id) return;
     try {
-      await updateVehicle(vehicle.id, { available: !vehicle.available });
+      await updateVehicle(vehicle.id, { available: !vehicle.available }, adminDb);
       await loadVehicles();
     } catch (error) {
       console.error('Error toggling availability:', error);

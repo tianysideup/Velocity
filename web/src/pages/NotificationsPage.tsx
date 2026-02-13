@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell, FaReceipt, FaTimes, FaCar, FaCalendar, FaUser, FaPhone, FaEnvelope } from 'react-icons/fa';
+import { FaReceipt, FaTimes, FaCar, FaCalendar, FaUser, FaPhone, FaEnvelope } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import { subscribeToUserRentals, type Rental } from '../services/rentalService';
 import '../styles/NotificationsPage.css';
@@ -47,9 +47,9 @@ const NotificationsPage = () => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    return 'checkmark-circle';
-  };
+  // const getStatusIcon = (status: string) => {
+  //   return 'checkmark-circle';
+  // };
 
   const currentRentals = rentals.filter(r => r.status === 'pending' || r.status === 'active');
   const completedRentals = rentals.filter(r => r.status === 'completed');

@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "cd1f6deb-dd0d-47a8-abbb-dfcb1f892199"
+      }
+    },
+    "android": {
+      "package": "com.menatwork10.velocity"
+    }
+  }
+}

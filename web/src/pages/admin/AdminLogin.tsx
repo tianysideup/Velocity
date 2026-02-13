@@ -50,14 +50,15 @@ const AdminLogin = () => {
       navigate('/admin/dashboard', { replace: true });
     } catch (err: any) {
       console.error('Login error:', err);
-      if (err.code === 'auth/invalid-credential') {
+      const code = err?.code || '';
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password') {
         setError('Invalid email or password');
-      } else if (err.code === 'auth/user-not-found') {
+      } else if (code === 'auth/user-not-found') {
         setError('No account found with this email');
-      } else if (err.code === 'auth/wrong-password') {
-        setError('Incorrect password');
+      } else if (code === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please try again later.');
       } else {
-        setError('Failed to login. Please try again.');
+        setError(err?.message || 'Failed to login. Please try again.');
       }
       setSubmitting(false);
     }

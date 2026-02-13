@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, type Firestore } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export interface Vehicle {
@@ -55,9 +55,9 @@ export const getAllVehicles = async (): Promise<Vehicle[]> => {
 };
 
 // Get all vehicles including reserved ones (for admin)
-export const getAllVehiclesForAdmin = async (): Promise<Vehicle[]> => {
+export const getAllVehiclesForAdmin = async (firestore: Firestore = db): Promise<Vehicle[]> => {
   try {
-    const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+    const querySnapshot = await getDocs(collection(firestore, COLLECTION_NAME));
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -69,10 +69,10 @@ export const getAllVehiclesForAdmin = async (): Promise<Vehicle[]> => {
 };
 
 // Add a new vehicle
-export const addVehicle = async (vehicle: Omit<Vehicle, 'id'>): Promise<string> => {
+export const addVehicle = async (vehicle: Omit<Vehicle, 'id'>, firestore: Firestore = db): Promise<string> => {
   try {
     console.log('📝 Adding vehicle to Firestore:', vehicle.name);
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), vehicle);
+    const docRef = await addDoc(collection(firestore, COLLECTION_NAME), vehicle);
     console.log('✅ Vehicle added with ID:', docRef.id);
     return docRef.id;
   } catch (error) {
@@ -82,9 +82,9 @@ export const addVehicle = async (vehicle: Omit<Vehicle, 'id'>): Promise<string> 
 };
 
 // Update a vehicle
-export const updateVehicle = async (id: string, vehicle: Partial<Vehicle>): Promise<void> => {
+export const updateVehicle = async (id: string, vehicle: Partial<Vehicle>, firestore: Firestore = db): Promise<void> => {
   try {
-    const vehicleRef = doc(db, COLLECTION_NAME, id);
+    const vehicleRef = doc(firestore, COLLECTION_NAME, id);
     await updateDoc(vehicleRef, vehicle);
   } catch (error) {
     console.error('Error updating vehicle:', error);
@@ -93,9 +93,9 @@ export const updateVehicle = async (id: string, vehicle: Partial<Vehicle>): Prom
 };
 
 // Delete a vehicle
-export const deleteVehicle = async (id: string): Promise<void> => {
+export const deleteVehicle = async (id: string, firestore: Firestore = db): Promise<void> => {
   try {
-    await deleteDoc(doc(db, COLLECTION_NAME, id));
+    await deleteDoc(doc(firestore, COLLECTION_NAME, id));
   } catch (error) {
     console.error('Error deleting vehicle:', error);
     throw error;

@@ -9,7 +9,8 @@ import {
   where,
   orderBy,
   onSnapshot,
-  Timestamp 
+  Timestamp,
+  type Firestore 
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
@@ -36,9 +37,9 @@ export interface Rental {
 
 const rentalsCollection = 'rentals';
 
-export const getAllRentals = async (): Promise<Rental[]> => {
+export const getAllRentals = async (firestore: Firestore = db): Promise<Rental[]> => {
   try {
-    const q = query(collection(db, rentalsCollection), orderBy('createdAt', 'desc'));
+    const q = query(collection(firestore, rentalsCollection), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => {
       const data = doc.data();
@@ -80,18 +81,18 @@ export const updateRental = async (id: string, rental: Partial<Rental>): Promise
   }
 };
 
-export const deleteRental = async (id: string): Promise<void> => {
+export const deleteRental = async (id: string, firestore: Firestore = db): Promise<void> => {
   try {
-    await deleteDoc(doc(db, rentalsCollection, id));
+    await deleteDoc(doc(firestore, rentalsCollection, id));
   } catch (error) {
     console.error('Error deleting rental:', error);
     throw error;
   }
 };
 
-export const updateRentalStatus = async (id: string, status: Rental['status']): Promise<void> => {
+export const updateRentalStatus = async (id: string, status: Rental['status'], firestore: Firestore = db): Promise<void> => {
   try {
-    const rentalRef = doc(db, rentalsCollection, id);
+    const rentalRef = doc(firestore, rentalsCollection, id);
     await updateDoc(rentalRef, { status });
   } catch (error) {
     console.error('Error updating rental status:', error);

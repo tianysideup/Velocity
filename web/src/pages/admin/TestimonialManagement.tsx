@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { subscribeToTestimonials, updateTestimonialStatus, deleteTestimonial, type Testimonial } from '../../services/testimonialService';
+import { adminDb } from '../../config/firebase';
 import { FaCheckCircle, FaTrash, FaStar, FaClock } from 'react-icons/fa';
 import AdminLayout from '../../components/AdminLayout';
 import '../../styles/admin/TestimonialManagement.css';
@@ -19,7 +20,7 @@ const TestimonialManagement = () => {
       console.log('Received testimonial update:', data.length, 'testimonials');
       setTestimonials(data);
       setLoading(false);
-    });
+    }, adminDb);
 
     // Cleanup listener on unmount
     return () => {
@@ -38,7 +39,7 @@ const TestimonialManagement = () => {
     
     try {
       setProcessing(id);
-      await updateTestimonialStatus(id, 'approved');
+      await updateTestimonialStatus(id, 'approved', adminDb);
       // No need to reload - real-time listener will update automatically
       alert('Testimonial approved successfully!');
     } catch (error: any) {
@@ -63,7 +64,7 @@ const TestimonialManagement = () => {
 
     try {
       setProcessing(id);
-      await deleteTestimonial(id);
+      await deleteTestimonial(id, adminDb);
       // No need to reload - real-time listener will update automatically
       alert('Testimonial deleted successfully!');
     } catch (error: any) {

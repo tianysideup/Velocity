@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { subscribeToContactMessages, deleteContactMessage, type ContactMessage } from '../../services/contactService';
+import { adminDb } from '../../config/firebase';
 import { FaEnvelope, FaPhone, FaTrash } from 'react-icons/fa';
 import AdminLayout from '../../components/AdminLayout';
 import '../../styles/admin/ContactManagement.css';
@@ -18,7 +19,7 @@ const ContactManagement = () => {
       console.log('Received contact messages update:', data.length, 'messages');
       setMessages(data);
       setLoading(false);
-    });
+    }, adminDb);
 
     // Cleanup listener on unmount
     return () => {
@@ -36,7 +37,7 @@ const ContactManagement = () => {
 
     try {
       setProcessing(id);
-      await deleteContactMessage(id);
+      await deleteContactMessage(id, adminDb);
       // No need to reload - real-time listener will update automatically
     } catch (error) {
       console.error('Error deleting message:', error);

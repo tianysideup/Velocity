@@ -24,7 +24,7 @@ function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
-  const isVehicleDetailsRoute = location.pathname.startsWith('/vehicle/');
+  // const isVehicleDetailsRoute = location.pathname.startsWith('/vehicle/');
 
   return (
     <div className="app">

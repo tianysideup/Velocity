@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, onSnapshot, type Firestore } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export interface ContactMessage {
@@ -56,7 +56,7 @@ export const getAllContactMessages = async (): Promise<ContactMessage[]> => {
 };
 
 // Delete a contact message
-export const deleteContactMessage = async (messageId: string): Promise<void> => {
+export const deleteContactMessage = async (messageId: string, firestore: Firestore = db): Promise<void> => {
   if (!messageId) {
     throw new Error('Message ID is required');
   }
@@ -64,7 +64,7 @@ export const deleteContactMessage = async (messageId: string): Promise<void> => 
   console.log('Deleting contact message:', messageId);
   
   try {
-    await deleteDoc(doc(db, 'contacts', messageId));
+    await deleteDoc(doc(firestore, 'contacts', messageId));
     console.log('Contact message deleted successfully');
   } catch (error) {
     console.error('Error deleting contact message:', error);
@@ -73,10 +73,10 @@ export const deleteContactMessage = async (messageId: string): Promise<void> => 
 };
 
 // Real-time listener for contact messages (admin only)
-export const subscribeToContactMessages = (callback: (messages: ContactMessage[]) => void): (() => void) => {
+export const subscribeToContactMessages = (callback: (messages: ContactMessage[]) => void, firestore: Firestore = db): (() => void) => {
   try {
     const q = query(
-      collection(db, 'contacts'),
+      collection(firestore, 'contacts'),
       orderBy('createdAt', 'desc')
     );
     
@@ -90,7 +90,7 @@ export const subscribeToContactMessages = (callback: (messages: ContactMessage[]
       },
       (error) => {
         console.warn('Failed to listen with orderBy, trying without ordering:', error);
-        return onSnapshot(collection(db, 'contacts'), (querySnapshot) => {
+        return onSnapshot(collection(firestore, 'contacts'), (querySnapshot) => {
           const messages = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
@@ -108,7 +108,7 @@ export const subscribeToContactMessages = (callback: (messages: ContactMessage[]
     );
   } catch (error) {
     console.error('Error setting up contact listener:', error);
-    return onSnapshot(collection(db, 'contacts'), (querySnapshot) => {
+    return onSnapshot(collection(firestore, 'contacts'), (querySnapshot) => {
       const messages = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()

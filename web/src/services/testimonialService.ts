@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, type Firestore } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export interface Testimonial {
@@ -121,7 +121,8 @@ export const submitTestimonial = async (testimonial: Omit<Testimonial, 'id'>): P
 // Update testimonial status (admin only)
 export const updateTestimonialStatus = async (
   testimonialId: string, 
-  status: 'approved' | 'rejected'
+  status: 'approved' | 'rejected',
+  firestore: Firestore = db
 ): Promise<void> => {
   if (!testimonialId) {
     throw new Error('Testimonial ID is required');
@@ -130,7 +131,7 @@ export const updateTestimonialStatus = async (
   console.log('Updating testimonial status:', testimonialId, 'to', status);
   
   try {
-    const testimonialRef = doc(db, 'testimonials', testimonialId);
+    const testimonialRef = doc(firestore, 'testimonials', testimonialId);
     const updateData: any = { status };
     
     if (status === 'approved') {
@@ -146,7 +147,7 @@ export const updateTestimonialStatus = async (
 };
 
 // Delete testimonial (admin only)
-export const deleteTestimonial = async (testimonialId: string): Promise<void> => {
+export const deleteTestimonial = async (testimonialId: string, firestore: Firestore = db): Promise<void> => {
   if (!testimonialId) {
     throw new Error('Testimonial ID is required');
   }
@@ -154,7 +155,7 @@ export const deleteTestimonial = async (testimonialId: string): Promise<void> =>
   console.log('Deleting testimonial:', testimonialId);
   
   try {
-    await deleteDoc(doc(db, 'testimonials', testimonialId));
+    await deleteDoc(doc(firestore, 'testimonials', testimonialId));
     console.log('Testimonial deleted successfully');
   } catch (error) {
     console.error('Error deleting testimonial:', error);
@@ -163,11 +164,11 @@ export const deleteTestimonial = async (testimonialId: string): Promise<void> =>
 };
 
 // Real-time listener for all testimonials (admin only)
-export const subscribeToTestimonials = (callback: (testimonials: Testimonial[]) => void): (() => void) => {
+export const subscribeToTestimonials = (callback: (testimonials: Testimonial[]) => void, firestore: Firestore = db): (() => void) => {
   try {
     // Try with orderBy first
     const q = query(
-      collection(db, 'testimonials'),
+      collection(firestore, 'testimonials'),
       orderBy('createdAt', 'desc')
     );
     
@@ -182,7 +183,7 @@ export const subscribeToTestimonials = (callback: (testimonials: Testimonial[]) 
       (error) => {
         console.warn('Failed to listen with orderBy, trying without ordering:', error);
         // If orderBy fails, set up listener without ordering
-        const simpleQuery = collection(db, 'testimonials');
+        const simpleQuery = collection(firestore, 'testimonials');
         return onSnapshot(simpleQuery, (querySnapshot) => {
           const testimonials = querySnapshot.docs.map(doc => ({
             id: doc.id,
@@ -203,7 +204,7 @@ export const subscribeToTestimonials = (callback: (testimonials: Testimonial[]) 
   } catch (error) {
     console.error('Error setting up testimonial listener:', error);
     // Fallback to simple listener
-    return onSnapshot(collection(db, 'testimonials'), (querySnapshot) => {
+    return onSnapshot(collection(firestore, 'testimonials'), (querySnapshot) => {
       const testimonials = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()

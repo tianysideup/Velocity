@@ -5,6 +5,7 @@ import {
   deleteRental, 
   type Rental 
 } from '../../services/rentalService';
+import { adminDb } from '../../config/firebase';
 import { 
   FaTrash, 
   FaEye,
@@ -40,7 +41,7 @@ const RentalManagement = () => {
 
   const loadRentals = async () => {
     try {
-      const data = await getAllRentals();
+      const data = await getAllRentals(adminDb);
       setRentals(data);
     } catch (error) {
       console.error('Error loading rentals:', error);
@@ -60,7 +61,7 @@ const RentalManagement = () => {
 
   const handleStatusChange = async (id: string, newStatus: Rental['status']) => {
     try {
-      await updateRentalStatus(id, newStatus);
+      await updateRentalStatus(id, newStatus, adminDb);
       await loadRentals();
       
       // Show success message based on status
@@ -85,7 +86,7 @@ const RentalManagement = () => {
 
     try {
       setDeleting(true);
-      await deleteRental(rentalToDelete);
+      await deleteRental(rentalToDelete, adminDb);
       await loadRentals();
       setShowDeleteModal(false);
       setRentalToDelete(null);

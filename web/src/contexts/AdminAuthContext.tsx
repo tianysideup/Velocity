@@ -6,7 +6,7 @@ import {
   type User
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { adminAuth, adminDb } from '../config/firebase';
 
 interface AdminProfile {
   email: string;
@@ -45,19 +45,19 @@ export const AdminAuthProvider = ({ children }: AdminAuthProviderProps) => {
     console.log('[AdminAuthContext] Admin login called with email:', email);
     
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(adminAuth, email, password);
       const user = userCredential.user;
       
       console.log('[AdminAuthContext] Firebase auth successful');
       
-      // Get the user's role
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      // Get the user's role — use adminDb so Firestore sends the admin auth token
+      const userDoc = await getDoc(doc(adminDb, 'users', user.uid));
       console.log('[AdminAuthContext] User document exists:', userDoc.exists());
       
       if (!userDoc.exists() && email === 'admin@velocity.com') {
         // Auto-create admin document if it doesn't exist
         console.log('[AdminAuthContext] Creating admin user document...');
-        await setDoc(doc(db, 'users', user.uid), {
+        await setDoc(doc(adminDb, 'users', user.uid), {
           email: email,
           role: 'admin',
           createdAt: new Date()
@@ -85,7 +85,8 @@ export const AdminAuthProvider = ({ children }: AdminAuthProviderProps) => {
       // Only allow admin role
       if (role !== 'admin') {
         console.log('[AdminAuthContext] Not an admin, signing out');
-        await signOut(auth);
+        sessionStorage.removeItem('adminLoggedIn');
+        await signOut(adminAuth);
         return false;
       }
       
@@ -110,20 +111,20 @@ export const AdminAuthProvider = ({ children }: AdminAuthProviderProps) => {
     sessionStorage.removeItem('adminLoggedIn');
     setAdminUser(null);
     setAdminProfile(null);
-    await signOut(auth);
+    await signOut(adminAuth);
   };
 
   useEffect(() => {
     console.log('[AdminAuthContext] Setting up onAuthStateChanged listener');
     
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(adminAuth, async (user) => {
       console.log('[AdminAuthContext] Auth state changed, user:', user?.email);
       const isAdminLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
       
       if (user && isAdminLoggedIn) {
         try {
           // Verify admin role
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          const userDoc = await getDoc(doc(adminDb, 'users', user.uid));
           const userData = userDoc.data();
           
           if (userData?.role === 'admin') {

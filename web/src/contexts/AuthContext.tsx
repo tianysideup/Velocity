@@ -97,41 +97,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      // Check if admin is logged in - if so, don't interfere with user auth state
-      const isAdminLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
-      
       if (user) {
-        // Check if user is an admin - if so, don't set them in user context
-        // UNLESS admin is explicitly logged in and this is that admin user
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          const userData = userDoc.data();
-          
-          if (userData?.role === 'admin' && !isAdminLoggedIn) {
-            // This is an admin user logging in from regular login page, don't set them
-            setCurrentUser(null);
-            setUserProfile(null);
-          } else if (userData?.role === 'admin' && isAdminLoggedIn) {
-            // Admin is logged in via admin panel, don't set in regular user context
-            setCurrentUser(null);
-            setUserProfile(null);
-          } else {
-            // Regular user
-            setCurrentUser(user);
-          }
-        } catch (error) {
-          console.error('Error checking user role:', error);
-          // If error and not admin session, treat as regular user
-          if (!isAdminLoggedIn) {
-            setCurrentUser(user);
-          }
-        }
+        setCurrentUser(user);
       } else {
-        // No user logged in - only clear if not admin session
-        if (!isAdminLoggedIn) {
-          setCurrentUser(null);
-          setUserProfile(null);
-        }
+        setCurrentUser(null);
+        setUserProfile(null);
       }
       setLoading(false);
     });
